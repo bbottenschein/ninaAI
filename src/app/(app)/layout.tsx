@@ -7,7 +7,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
 
   return (
     <>
-      <main className="mx-auto w-full max-w-lg px-5 pt-[calc(env(safe-area-inset-top)+1.5rem)] pb-28">
+      <main className="mx-auto w-full max-w-lg px-5 pt-[calc(env(safe-area-inset-top)+1.5rem)] pb-32">
         {children}
       </main>
       <TabBar tabs={tabsFor(user.role)} />

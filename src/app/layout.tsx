@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Nunito } from "next/font/google";
 import { ServiceWorkerRegistration } from "@/features/shell/service-worker-registration";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Runde, freundliche Schrift – passt zum verspielten Look.
+const nunito = Nunito({
+  variable: "--font-nunito",
   subsets: ["latin"],
 });
 
@@ -23,14 +24,14 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#faf7f2" },
-    { media: "(prefers-color-scheme: dark)", color: "#141311" },
+    { media: "(prefers-color-scheme: light)", color: "#fff7fa" },
+    { media: "(prefers-color-scheme: dark)", color: "#1d151f" },
   ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="de" className={`${geistSans.variable} h-full antialiased`}>
+    <html lang="de" className={`${nunito.variable} h-full antialiased`}>
       <body className="min-h-full font-sans">
         {children}
         <ServiceWorkerRegistration />

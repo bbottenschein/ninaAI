@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/features/auth/actions";
-import { ComingSoon, PageHeader } from "@/features/shell/page-header";
+import { ComingSoon, HeaderButton, PageHeader } from "@/features/shell/page-header";
 import { formatDate, rewardStatus, type RewardRow } from "@/features/rewards/labels";
 import { nextMilestone } from "@/features/rewards/milestones";
 
@@ -28,7 +28,7 @@ export async function AdminView() {
         title="Admin"
         action={
           <form action={logout}>
-            <button className="text-sm text-muted underline">Abmelden</button>
+            <HeaderButton>Abmelden</HeaderButton>
           </form>
         }
       />

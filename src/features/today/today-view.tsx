@@ -1,20 +1,22 @@
 import Link from "next/link";
 import { formatLongDate } from "@/lib/date";
 import { logout } from "@/features/auth/actions";
-import { PageHeader } from "@/features/shell/page-header";
-import { STEPS, isDayComplete, stepStates, type StepState } from "./steps";
+import { Mouse } from "@/features/shell/mouse";
+import { HeaderButton, PageHeader } from "@/features/shell/page-header";
+import { STEPS, isDayComplete, stepStates, type StepKey, type StepState } from "./steps";
 import type { TodayData } from "./queries";
 import { AutoRefresh } from "./auto-refresh";
 
 /** Wohin ein Schritt führt, sobald er offen ist (Quiz und Tutor ab Phase 3). */
-const STEP_HREF: Partial<Record<(typeof STEPS)[number]["key"], string>> = {
+const STEP_HREF: Partial<Record<StepKey, string>> = {
   news: "/news",
 };
 
-const STATE_LABEL: Record<StepState, string> = {
-  done: "Erledigt",
-  open: "Bereit",
-  locked: "Gesperrt",
+/** Jeder Schritt hat seine eigene Farbe und ein Symbol. */
+const STEP_STYLE: Record<StepKey, { emoji: string; bubble: string }> = {
+  news: { emoji: "📰", bubble: "bg-accent-soft" },
+  quiz: { emoji: "🧠", bubble: "bg-lavender-soft" },
+  tutor: { emoji: "💬", bubble: "bg-mint-soft" },
 };
 
 export function TodayView({
@@ -28,78 +30,91 @@ export function TodayView({
 }) {
   const states = stepStates(data.progress);
   const complete = isDayComplete(data.progress);
+  const generating = data.lessonPhase === "generating" || data.lessonPhase === "start";
 
   return (
     <>
       <PageHeader
+        icon={<Mouse mood={complete ? "party" : "happy"} className="size-14 shrink-0" />}
         subtitle={formatLongDate(date)}
         title={data.playerName ? `Heute bei ${data.playerName}` : `Hi ${greetingName}!`}
         action={
           <form action={logout}>
-            <button className="text-sm text-muted underline">Abmelden</button>
+            <HeaderButton>Abmelden</HeaderButton>
           </form>
         }
       />
 
       {data.streak && (
-        <section className="card mb-6 flex items-center justify-around text-center">
-          <Stat value={data.streak.current} label="Streak" />
-          <Stat value={data.streak.longest} label="Längste" />
-          <Stat value={data.streak.jokers > 0 ? "1" : "–"} label="Joker" />
+        <section className="mb-6 grid grid-cols-3 gap-3 text-center">
+          <Stat emoji="🔥" value={data.streak.current} label="Streak" tint="bg-accent-soft text-accent-ink" />
+          <Stat emoji="🏆" value={data.streak.longest} label="Längste" tint="bg-sun-soft text-sun" />
+          <Stat
+            emoji="🃏"
+            value={data.streak.jokers > 0 ? "1" : "–"}
+            label="Joker"
+            tint="bg-lavender-soft text-lavender"
+          />
         </section>
       )}
 
-      {(data.lessonPhase === "generating" || data.lessonPhase === "start") && (
-        <div className="card mb-4 flex items-center gap-3 text-sm text-muted" role="status">
-          <span className="size-4 shrink-0 animate-spin rounded-full border-2 border-border border-t-accent" />
-          Die Lektion für heute wird gerade erstellt. Das dauert ein bis zwei Minuten …
+      {generating && (
+        <div className="card mb-4 flex items-center gap-4" role="status">
+          <Mouse mood="sleepy" className="size-14 shrink-0 animate-wiggle" />
+          <div>
+            <p className="font-bold">Die Maus sammelt gerade die News …</p>
+            <p className="text-sm text-muted">Das dauert ein bis zwei Minuten.</p>
+          </div>
           <AutoRefresh />
         </div>
       )}
 
       {data.lessonPhase === "unavailable" && (
-        <p className="card mb-4 text-sm text-muted">
-          Heute gibt es leider keine Lektion – die News konnten nicht geladen werden. Dieser Tag
-          zählt nicht gegen deine Streak.
-        </p>
+        <div className="card mb-4 flex items-center gap-4">
+          <Mouse mood="sleepy" className="size-14 shrink-0" />
+          <p className="text-sm text-muted">
+            Heute gibt es leider keine Lektion – die News konnten nicht geladen werden. Dieser Tag
+            zählt nicht gegen deine Streak.
+          </p>
+        </div>
       )}
 
       <ol className="flex flex-col gap-3">
-        {STEPS.map((step, i) => {
+        {STEPS.map((step) => {
           const state = data.lessonPhase === "ready" ? states[step.key] : "locked";
           const href = state !== "locked" ? STEP_HREF[step.key] : undefined;
           const description =
             step.key === "news" && data.lessonPhase === "ready" && state !== "done"
               ? `${Math.min(data.progress.newsRead, 3)}/3 Meldungen gelesen`
               : step.description;
+          const style = STEP_STYLE[step.key];
+
           const content = (
             <>
               <span
-                className={`flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${
-                  state === "done"
-                    ? "bg-success text-white"
-                    : state === "open"
-                      ? "bg-accent text-on-accent"
-                      : "bg-border text-muted"
-                }`}
+                className={`flex size-12 shrink-0 items-center justify-center rounded-2xl text-2xl ${
+                  state === "done" ? "bg-mint-soft" : style.bubble
+                } ${state === "locked" ? "grayscale" : ""}`}
+                aria-hidden
               >
-                {state === "done" ? "✓" : i + 1}
+                {state === "done" ? "✅" : style.emoji}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="font-semibold">{step.title}</p>
+                <p className="font-extrabold">{step.title}</p>
                 <p className="text-sm text-muted">{description}</p>
               </div>
-              <span className="text-xs font-medium text-muted">
-                {STATE_LABEL[state]}
-                {href && " ›"}
-              </span>
+              <StateBadge state={state} linked={Boolean(href)} />
             </>
           );
-          const className = `card flex items-center gap-4 ${state === "locked" ? "opacity-55" : ""}`;
+
+          const className = `card flex items-center gap-4 ${state === "locked" ? "opacity-60 shadow-none" : ""}`;
           return (
             <li key={step.key}>
               {href ? (
-                <Link href={href} className={`${className} transition active:scale-[0.99]`}>
+                <Link
+                  href={href}
+                  className={`${className} transition hover:-translate-y-0.5 active:scale-[0.98]`}
+                >
                   {content}
                 </Link>
               ) : (
@@ -111,19 +126,45 @@ export function TodayView({
       </ol>
 
       {complete && (
-        <p className="mt-6 text-center font-medium text-success">
-          Geschafft für heute! 🎉
-        </p>
+        <div className="card mt-6 animate-pop bg-accent-soft text-center">
+          <Mouse mood="party" className="mx-auto size-20" />
+          <p className="mt-2 text-lg font-extrabold">Geschafft für heute! 🎉</p>
+          <p className="text-sm text-muted">Die Maus ist stolz auf dich.</p>
+        </div>
       )}
     </>
   );
 }
 
-function Stat({ value, label }: { value: number | string; label: string }) {
+function StateBadge({ state, linked }: { state: StepState; linked: boolean }) {
+  if (state === "done") return <span className="chip bg-mint-soft text-mint">Erledigt</span>;
+  if (state === "locked") return <span className="text-lg" aria-label="Gesperrt">🔒</span>;
+  if (!linked) return <span className="chip bg-lavender-soft text-lavender">Bald da</span>;
   return (
-    <div>
-      <p className="text-2xl font-semibold tabular-nums">{value}</p>
-      <p className="text-xs text-muted">{label}</p>
+    <span className="chip bg-accent text-on-accent">
+      Los geht&apos;s ›
+    </span>
+  );
+}
+
+function Stat({
+  emoji,
+  value,
+  label,
+  tint,
+}: {
+  emoji: string;
+  value: number | string;
+  label: string;
+  tint: string;
+}) {
+  return (
+    <div className={`rounded-3xl px-2 py-3 ${tint}`}>
+      <p className="text-lg" aria-hidden>
+        {emoji}
+      </p>
+      <p className="text-2xl font-extrabold tabular-nums">{value}</p>
+      <p className="text-xs font-bold">{label}</p>
     </div>
   );
 }
