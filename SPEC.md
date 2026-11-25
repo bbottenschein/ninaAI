@@ -44,8 +44,23 @@ international. Jede liegt auf Englisch und Deutsch vor.
 
 ### Auswahl
 
-- Quellen: die Feeds aus dem bestehenden News-Dashboard, ergänzt um politische Quellen
-  (z. B. tagesschau.de für Deutschland, eine internationale Nachrichtenquelle für die Weltnachricht).
+- Quellen: die Politik-Feeds aus dem bestehenden News-Dashboard (Repo `bbottenschein/news-dashboard`,
+  Tabelle `sources` in `supabase/migrations/0001_init.sql`) plus CNBC Politics. **[Review] Festgelegt:**
+
+  | Region | Quelle | Feed | Status (getestet 25.11.2026) |
+  |---|---|---|---|
+  | DE | tagesschau Innenpolitik | `https://www.tagesschau.de/inland/innenpolitik/index~rss2.xml` | direkt ok |
+  | DE | ZEIT Politik | `https://newsfeed.zeit.de/politik/index` | direkt ok |
+  | DE | SZ Politik | `https://rss.sueddeutsche.de/rss/Politik` | direkt ok |
+  | Int. | BBC World (Hauptquelle) | `https://feeds.bbci.co.uk/news/world/rss.xml` | direkt ok |
+  | Int. | POLITICO Europe | `https://www.politico.eu/feed/` | 403 (Bot-Schutz) → Google News `site:politico.eu` |
+  | Int. | CNBC Politics | `https://www.cnbc.com/id/10000113/device/rss/rss.html` | 403 (Akamai) → Google News `site:cnbc.com politics` |
+
+  Ersatzweg wie im Dashboard: Liefert ein Feed nichts, wird
+  `https://news.google.com/rss/search?q=when:24h+<query>&hl=…` abgefragt. Google-News-Einträge
+  haben nur die Schlagzeile, keinen Artikeltext – für die ausgewählten Meldungen muss genug
+  Quelltext vorliegen (Regel „Ämter nur aus dem Quelltext“), daher BBC World als Hauptquelle.
+  Feed-Code (`src/lib/news/feed.ts`, `normalize.ts`) kann aus dem Dashboard übernommen werden.
 - Die KI rankt die Schlagzeilen des Vortags und Morgens nach politischer Relevanz und
   wählt 2 deutsche + 1 internationale Meldung. Keine Dubletten zum Vortag.
 
@@ -243,7 +258,7 @@ Tageslektion wird einmal erzeugt und gespeichert, nicht bei jedem Öffnen.
 
 Sechs Phasen, jede endet mit einer nutzbaren Version. Nach Phase 3 kann sie die App schon täglich nutzen.
 
-- [ ] **Phase 1 – Grundgerüst:** Next.js-PWA, Supabase-Projekt, Login für 2 Konten, Tab-Navigation (Heute, Vokabeln, Knowledge, Gutscheine).
+- [x] **Phase 1 – Grundgerüst:** Next.js-PWA, Supabase-Projekt, Login für 2 Konten, Tab-Navigation (Heute, Vokabeln, Knowledge, Gutscheine).
 - [ ] **Phase 2 – News des Tages:** Morgen-Job, News-Ansicht mit EN/DE-Toggle, Begriffs-Erklärungen, Personen mit Amt.
 - [ ] **Phase 3 – Quiz & Tutor:** Quiz of the Day, Tutor-Gespräch per Stimme mit Text-Fallback, Abschluss-Feedback, Tagesfortschritt.
 - [ ] **Phase 4 – Streak & Belohnungen:** Nacht-Job, Streak- und Joker-Logik, Pathway, Gutscheine mit Einlösen, Admin-Bereich.
@@ -262,6 +277,7 @@ Die Streak-Logik (Phase 4) wird mit Unit-Tests abgesichert, z. B. für „Joker 
 - [x] **[Review]** Lektion ab 00:00 verfügbar, On-Demand-Fallback; Tag ohne Lektion ist neutral.
 - [x] **[Review]** Sprache: OpenAI Whisper + TTS.
 - [ ] Stimme des Tutors festlegen (männlich/weiblich, britisch/amerikanisch).
-- [ ] Konkrete Quellen für die internationale Meldung festlegen.
-- [ ] Feed-URLs aus dem bestehenden News-Dashboard.
+- [x] **[Review]** Konkrete Quellen für die internationale Meldung: BBC World (Haupt), POLITICO Europe, CNBC Politics.
+- [x] **[Review]** Feed-URLs aus dem bestehenden News-Dashboard (siehe News des Tages › Auswahl).
+- [x] **[Review]** Anthropic-Key: als Umgebungsvariable `ANTHROPIC_API_KEY` (lokal `.env.local`, live in Vercel).
 - [ ] Was passiert an Tagen mit wenig politischen News (z. B. Feiertage): Ersatz durch Wirtschaftsthemen?
