@@ -24,6 +24,11 @@ describe("isActive", () => {
     expect(isActive(today, "/vokabeln")).toBe(false);
   });
 
+  it("markiert Heute auch auf den Schritten des Tages", () => {
+    expect(isActive(today, "/news")).toBe(true);
+    expect(isActive(vocab, "/news")).toBe(false);
+  });
+
   it("markiert Unterseiten als aktiv", () => {
     expect(isActive(vocab, "/vokabeln/quiz")).toBe(true);
     expect(isActive(vocab, "/vokabelnx")).toBe(false);

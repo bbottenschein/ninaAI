@@ -1,11 +1,10 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
+import { lessonPhase, type LessonPhase, type LessonRow } from "@/features/lesson/status";
 import type { ProgressFlags } from "./steps";
 
-export type LessonStatus = "ready" | "generating" | "failed" | "missing";
-
 export type TodayData = {
-  lessonStatus: LessonStatus;
+  lessonPhase: LessonPhase;
   progress: ProgressFlags;
   streak: { current: number; longest: number; jokers: number } | null;
   playerName: string | null;
@@ -35,7 +34,11 @@ export async function loadToday(
   }
 
   const [lesson, progress, streak] = await Promise.all([
-    supabase.from("daily_lessons").select("status").eq("date", date).maybeSingle(),
+    supabase
+      .from("daily_lessons")
+      .select("status, attempts, generation_started_at")
+      .eq("date", date)
+      .maybeSingle(),
     playerId
       ? supabase
           .from("lesson_progress")
@@ -54,7 +57,7 @@ export async function loadToday(
   ]);
 
   return {
-    lessonStatus: (lesson.data?.status as LessonStatus | undefined) ?? "missing",
+    lessonPhase: lessonPhase((lesson.data as LessonRow | null) ?? null),
     progress: {
       newsRead: progress.data?.news_read?.length ?? 0,
       quizDone: progress.data?.quiz_done ?? false,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { addDays, berlinDate, formatLongDate } from "./date";
+import { addDays, berlinDate, berlinHour, formatLongDate } from "./date";
 
 describe("berlinDate", () => {
   it("nutzt Winterzeit (UTC+1): 23:30 UTC ist schon der nächste Tag", () => {
@@ -36,5 +36,13 @@ describe("addDays", () => {
 describe("formatLongDate", () => {
   it("formatiert auf Deutsch", () => {
     expect(formatLongDate("2026-11-25")).toBe("Mittwoch, 25. November");
+  });
+});
+
+describe("berlinHour", () => {
+  it("rechnet Winter- und Sommerzeit um", () => {
+    expect(berlinHour(new Date("2026-11-25T04:00:00Z"))).toBe(5);
+    expect(berlinHour(new Date("2026-07-01T03:00:00Z"))).toBe(5);
+    expect(berlinHour(new Date("2026-11-25T23:30:00Z"))).toBe(0);
   });
 });
