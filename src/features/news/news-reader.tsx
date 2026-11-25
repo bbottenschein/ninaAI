@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState, useTransition, type ReactNode } from "react";
 import type { LessonNews } from "@/features/lesson/schema";
 import { markNewsRead } from "./actions";
+import { Mouse } from "@/features/shell/mouse";
 import { annotate, type Mark, type MarkKind } from "./annotate";
 import { NEWS_LANG_COOKIE, type NewsLang } from "./lang";
 
@@ -11,9 +12,9 @@ type Lang = NewsLang;
 type Selection = { news: number; kind: MarkKind; index: number };
 
 
-const REGION_LABEL: Record<LessonNews["region"], string> = {
-  de: "Deutschland",
-  int: "International",
+const REGION: Record<LessonNews["region"], { label: string; chip: string }> = {
+  de: { label: "🇩🇪 Deutschland", chip: "bg-accent-soft text-accent-ink" },
+  int: { label: "🌍 International", chip: "bg-lavender-soft text-lavender" },
 };
 
 export function NewsReader({
@@ -54,20 +55,34 @@ export function NewsReader({
 
   return (
     <>
-      <header className="mb-5 flex items-center justify-between gap-4">
+      <header className="mb-4 flex items-center justify-between gap-4">
         <div>
-          <Link href="/" className="text-sm text-muted">
+          <Link href="/" className="text-sm font-bold text-accent-ink">
             ← Heute
           </Link>
-          <h1 className="text-2xl font-semibold">News des Tages</h1>
+          <h1 className="text-[1.75rem] leading-tight font-extrabold tracking-tight">
+            News des Tages
+          </h1>
         </div>
         <LangToggle lang={lang} onChange={chooseLang} />
       </header>
 
-      <p className="mb-4 text-sm text-muted">
-        {readOnly ? "Ansicht der Spielerin · " : ""}
-        {read.length}/{news.length} gelesen · Markierte Wörter antippen
-      </p>
+      <div className="mb-5 flex items-center gap-3">
+        <div className="flex gap-1.5" aria-hidden>
+          {news.map((_, i) => (
+            <span
+              key={i}
+              className={`h-2.5 w-8 rounded-full transition-colors ${
+                read.includes(i) ? "bg-accent" : "bg-border"
+              }`}
+            />
+          ))}
+        </div>
+        <p className="text-sm font-semibold text-muted">
+          {readOnly ? "Ansicht der Spielerin · " : ""}
+          {read.length}/{news.length} gelesen
+        </p>
+      </div>
 
       <ol className="flex flex-col gap-4">
         {news.map((item, i) => (
@@ -92,8 +107,9 @@ export function NewsReader({
       )}
 
       {allRead && (
-        <div className="card mt-6 text-center">
-          <p className="font-semibold text-success">Alle 3 Meldungen gelesen ✓</p>
+        <div className="card mt-6 animate-pop bg-accent-soft text-center">
+          <Mouse mood="party" className="mx-auto size-20" />
+          <p className="mt-2 text-lg font-extrabold">Alle 3 Meldungen gelesen!</p>
           <p className="mt-1 text-sm text-muted">Als Nächstes kommt das Quiz of the Day.</p>
           <Link href="/" className="btn-primary mt-4 inline-block">
             Zurück zu Heute
@@ -117,14 +133,14 @@ export function NewsReader({
 
 function LangToggle({ lang, onChange }: { lang: Lang; onChange: (lang: Lang) => void }) {
   return (
-    <div role="group" aria-label="Sprache" className="flex rounded-full border border-border bg-surface p-1">
+    <div role="group" aria-label="Sprache" className="flex rounded-full border-2 border-border bg-surface p-1">
       {(["en", "de"] as const).map((option) => (
         <button
           key={option}
           type="button"
           aria-pressed={lang === option}
           onClick={() => onChange(option)}
-          className={`rounded-full px-3.5 py-1.5 text-sm font-semibold transition-colors ${
+          className={`rounded-full px-3.5 py-1.5 text-sm font-extrabold transition-colors ${
             lang === option ? "bg-accent text-on-accent" : "text-muted"
           }`}
         >
@@ -147,8 +163,8 @@ function marksFor(item: LessonNews, lang: Lang): Mark[] {
 
 const MARK_CLASS: Record<MarkKind, string> = {
   term: "underline decoration-accent decoration-dotted decoration-2 underline-offset-4",
-  person: "rounded bg-accent-soft px-0.5 font-medium",
-  vocab: "underline decoration-success decoration-wavy underline-offset-4",
+  person: "rounded-md bg-accent-soft px-1 font-bold",
+  vocab: "underline decoration-lavender decoration-wavy underline-offset-4",
 };
 
 function NewsCard({
@@ -173,11 +189,12 @@ function NewsCard({
   const segments = annotate(text, marksFor(item, lang));
 
   return (
-    <article className={`card ${isRead ? "border-success/40" : ""}`}>
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted">
-        {REGION_LABEL[item.region]}
-      </p>
-      <h2 lang={lang} className="mt-1 text-lg font-semibold leading-snug">
+    <article className={`card ${isRead ? "border-mint/40" : ""}`}>
+      <div className="flex items-center justify-between gap-2">
+        <span className={`chip ${REGION[item.region].chip}`}>{REGION[item.region].label}</span>
+        {isRead && <span className="chip bg-mint-soft text-mint">✓ Gelesen</span>}
+      </div>
+      <h2 lang={lang} className="mt-3 text-xl leading-snug font-extrabold">
         {title}
       </h2>
       <p lang={lang} className="mt-3 text-[1.0625rem] leading-relaxed">
@@ -205,24 +222,28 @@ function NewsCard({
         >
           Quelle: {item.source_name} ↗
         </a>
-        {isRead ? (
-          <span className="shrink-0 text-sm font-semibold text-success">✓ Gelesen</span>
-        ) : readOnly ? (
+        {isRead ? null : readOnly ? (
           <span className="shrink-0 text-sm text-muted">Ungelesen</span>
         ) : (
           <button
             type="button"
             onClick={onMarkRead}
             disabled={pending}
-            className="btn-secondary shrink-0 py-2 text-sm"
+            className="btn-primary shrink-0 px-4 py-2 text-sm"
           >
-            Gelesen
+            Gelesen ✓
           </button>
         )}
       </div>
     </article>
   );
 }
+
+const LABEL_CHIP: Record<MarkKind, string> = {
+  term: "bg-accent-soft text-accent-ink",
+  person: "bg-sun-soft text-sun",
+  vocab: "bg-lavender-soft text-lavender",
+};
 
 function Legend({ lang }: { lang: Lang }) {
   return (
@@ -285,10 +306,11 @@ function DetailSheet({
 
   return (
     <div className="fixed inset-0 z-20 flex items-end justify-center" role="dialog" aria-modal="true" aria-label={label}>
-      <button type="button" aria-label="Schließen" onClick={onClose} className="absolute inset-0 bg-black/30" />
-      <div className="relative w-full max-w-lg rounded-t-3xl border border-border bg-surface px-5 pt-5 pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted">{label}</p>
-        <h3 className="mt-1 text-xl font-semibold">{heading}</h3>
+      <button type="button" aria-label="Schließen" onClick={onClose} className="absolute inset-0 bg-foreground/25 backdrop-blur-[2px]" />
+      <div className="relative w-full max-w-lg animate-pop rounded-t-[2rem] border border-border bg-surface px-6 pt-3 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] shadow-soft">
+        <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-border" aria-hidden />
+        <p className={`chip ${LABEL_CHIP[selection.kind]}`}>{label}</p>
+        <h3 className="mt-2 text-2xl font-extrabold">{heading}</h3>
         <div className="mt-2 leading-relaxed">{body}</div>
         <button type="button" onClick={onClose} className="btn-secondary mt-5 w-full">
           Schließen

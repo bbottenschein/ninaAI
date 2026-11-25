@@ -11,9 +11,9 @@ export function TabBar({ tabs }: { tabs: Tab[] }) {
   return (
     <nav
       aria-label="Hauptnavigation"
-      className="fixed inset-x-0 bottom-0 z-10 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
+      className="fixed inset-x-0 bottom-0 z-10 px-4 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]"
     >
-      <ul className="mx-auto flex max-w-lg">
+      <ul className="mx-auto flex max-w-lg gap-1 rounded-full border border-border bg-surface/95 p-1.5 shadow-soft backdrop-blur">
         {tabs.map((tab) => {
           const active = isActive(tab, pathname);
           return (
@@ -21,8 +21,8 @@ export function TabBar({ tabs }: { tabs: Tab[] }) {
               <Link
                 href={tab.href}
                 aria-current={active ? "page" : undefined}
-                className={`flex flex-col items-center gap-0.5 py-2.5 text-xs font-medium transition-colors ${
-                  active ? "text-accent" : "text-muted"
+                className={`flex flex-col items-center gap-0.5 rounded-full py-2 text-[0.7rem] font-bold transition-colors ${
+                  active ? "bg-accent-soft text-accent-ink" : "text-muted"
                 }`}
               >
                 <TabIcon icon={tab.icon} />
