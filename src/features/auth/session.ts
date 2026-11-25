@@ -21,12 +21,13 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser> => {
   const userId = auth?.claims?.sub;
   if (!userId) redirect("/login");
 
-  const { data: profile } = await supabase
+  const { data: profile, error } = await supabase
     .from("profiles")
     .select("id, name, role")
     .eq("id", userId)
-    .single();
+    .maybeSingle();
 
+  if (error) console.error("[auth] Profil nicht lesbar", error);
   if (!profile) {
     // Konto ohne Profil (sollte durch den DB-Trigger nie passieren).
     redirect("/login?error=profile");

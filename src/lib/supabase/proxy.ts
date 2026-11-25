@@ -44,7 +44,9 @@ export async function updateSession(request: NextRequest) {
     return withCookies(NextResponse.redirect(url), response);
   }
 
-  if (isLoggedIn && path === "/login") {
+  // Mit ?error=… bleibt die Login-Seite auch für Angemeldete erreichbar: Sie zeigt
+  // dann den Fehler (z. B. fehlendes Profil) statt einer Umleitungsschleife.
+  if (isLoggedIn && path === "/login" && !request.nextUrl.searchParams.has("error")) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
     url.search = "";
