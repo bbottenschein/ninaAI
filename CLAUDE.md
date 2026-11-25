@@ -25,7 +25,7 @@ Cron läuft in UTC: Jobs laufen stündlich und sind idempotent, statt auf eine f
 - `src/app/` – nur Routing: Seiten sind dünn und rufen Feature-Komponenten auf.
   - `(app)/` – alles hinter dem Login, mit Tab-Leiste.
   - `login/` – öffentlich.
-- `src/features/<modul>/` – ein Ordner pro Feature-Modul (`today`, `vocab`, `knowledge`,
+- `src/features/<modul>/` – ein Ordner pro Feature-Modul (`today`, `news`, `lesson`, `vocab`, `knowledge`,
   `rewards`, `admin`, `auth`, `shell`). Komponenten, Server Actions, Queries und reine Logik
   des Moduls liegen dort. Ein neues Feature = neuer Ordner + Eintrag in `src/features/shell/tabs.ts`.
 - `src/lib/` – modulübergreifende Helfer (Supabase-Clients, Datum, Env).

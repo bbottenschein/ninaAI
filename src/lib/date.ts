@@ -29,3 +29,14 @@ export function formatLongDate(date: string): string {
     timeZone: "UTC",
   }).format(new Date(`${date}T00:00:00Z`));
 }
+
+const hourFormat = new Intl.DateTimeFormat("en-GB", {
+  timeZone: APP_TIME_ZONE,
+  hour: "2-digit",
+  hourCycle: "h23",
+});
+
+/** Stunde (0–23) in Europe/Berlin für einen Zeitpunkt. */
+export function berlinHour(at: Date = new Date()): number {
+  return Number(hourFormat.format(at));
+}

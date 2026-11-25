@@ -1,8 +1,15 @@
+import Link from "next/link";
 import { formatLongDate } from "@/lib/date";
 import { logout } from "@/features/auth/actions";
 import { PageHeader } from "@/features/shell/page-header";
 import { STEPS, isDayComplete, stepStates, type StepState } from "./steps";
 import type { TodayData } from "./queries";
+import { AutoRefresh } from "./auto-refresh";
+
+/** Wohin ein Schritt führt, sobald er offen ist (Quiz und Tutor ab Phase 3). */
+const STEP_HREF: Partial<Record<(typeof STEPS)[number]["key"], string>> = {
+  news: "/news",
+};
 
 const STATE_LABEL: Record<StepState, string> = {
   done: "Erledigt",
@@ -42,22 +49,31 @@ export function TodayView({
         </section>
       )}
 
-      {data.lessonStatus !== "ready" && (
+      {(data.lessonPhase === "generating" || data.lessonPhase === "start") && (
+        <div className="card mb-4 flex items-center gap-3 text-sm text-muted" role="status">
+          <span className="size-4 shrink-0 animate-spin rounded-full border-2 border-border border-t-accent" />
+          Die Lektion für heute wird gerade erstellt. Das dauert ein bis zwei Minuten …
+          <AutoRefresh />
+        </div>
+      )}
+
+      {data.lessonPhase === "unavailable" && (
         <p className="card mb-4 text-sm text-muted">
-          {data.lessonStatus === "generating"
-            ? "Die Lektion für heute wird gerade erstellt …"
-            : "Die Lektion für heute ist noch nicht da. Ab Phase 2 wird sie jeden Morgen automatisch erstellt."}
+          Heute gibt es leider keine Lektion – die News konnten nicht geladen werden. Dieser Tag
+          zählt nicht gegen deine Streak.
         </p>
       )}
 
       <ol className="flex flex-col gap-3">
         {STEPS.map((step, i) => {
-          const state = states[step.key];
-          return (
-            <li
-              key={step.key}
-              className={`card flex items-center gap-4 ${state === "locked" ? "opacity-55" : ""}`}
-            >
+          const state = data.lessonPhase === "ready" ? states[step.key] : "locked";
+          const href = state !== "locked" ? STEP_HREF[step.key] : undefined;
+          const description =
+            step.key === "news" && data.lessonPhase === "ready" && state !== "done"
+              ? `${Math.min(data.progress.newsRead, 3)}/3 Meldungen gelesen`
+              : step.description;
+          const content = (
+            <>
               <span
                 className={`flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${
                   state === "done"
@@ -71,9 +87,24 @@ export function TodayView({
               </span>
               <div className="min-w-0 flex-1">
                 <p className="font-semibold">{step.title}</p>
-                <p className="text-sm text-muted">{step.description}</p>
+                <p className="text-sm text-muted">{description}</p>
               </div>
-              <span className="text-xs font-medium text-muted">{STATE_LABEL[state]}</span>
+              <span className="text-xs font-medium text-muted">
+                {STATE_LABEL[state]}
+                {href && " ›"}
+              </span>
+            </>
+          );
+          const className = `card flex items-center gap-4 ${state === "locked" ? "opacity-55" : ""}`;
+          return (
+            <li key={step.key}>
+              {href ? (
+                <Link href={href} className={`${className} transition active:scale-[0.99]`}>
+                  {content}
+                </Link>
+              ) : (
+                <div className={className}>{content}</div>
+              )}
             </li>
           );
         })}

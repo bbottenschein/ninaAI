@@ -60,7 +60,10 @@ international. Jede liegt auf Englisch und Deutsch vor.
   `https://news.google.com/rss/search?q=when:24h+<query>&hl=…` abgefragt. Google-News-Einträge
   haben nur die Schlagzeile, keinen Artikeltext – für die ausgewählten Meldungen muss genug
   Quelltext vorliegen (Regel „Ämter nur aus dem Quelltext“), daher BBC World als Hauptquelle.
-  Feed-Code (`src/lib/news/feed.ts`, `normalize.ts`) kann aus dem Dashboard übernommen werden.
+  Feed-Code liegt in `src/lib/news/` (`feed.ts`, `normalize.ts`, `article.ts`).
+  **[Umsetzung Phase 2]** Den Artikeltext liefern derzeit nur tagesschau und BBC: ZEIT untersagt
+  automatisierte Zugriffe ausdrücklich, SZ blockt sie (getestet 25.11.2026). Schlagzeilen von
+  ZEIT, SZ, POLITICO und CNBC gehen nur als Kontext in das Relevanz-Ranking ein.
 - Die KI rankt die Schlagzeilen des Vortags und Morgens nach politischer Relevanz und
   wählt 2 deutsche + 1 internationale Meldung. Keine Dubletten zum Vortag.
 
@@ -259,7 +262,7 @@ Tageslektion wird einmal erzeugt und gespeichert, nicht bei jedem Öffnen.
 Sechs Phasen, jede endet mit einer nutzbaren Version. Nach Phase 3 kann sie die App schon täglich nutzen.
 
 - [x] **Phase 1 – Grundgerüst:** Next.js-PWA, Supabase-Projekt, Login für 2 Konten, Tab-Navigation (Heute, Vokabeln, Knowledge, Gutscheine).
-- [ ] **Phase 2 – News des Tages:** Morgen-Job, News-Ansicht mit EN/DE-Toggle, Begriffs-Erklärungen, Personen mit Amt.
+- [x] **Phase 2 – News des Tages:** Morgen-Job, News-Ansicht mit EN/DE-Toggle, Begriffs-Erklärungen, Personen mit Amt.
 - [ ] **Phase 3 – Quiz & Tutor:** Quiz of the Day, Tutor-Gespräch per Stimme mit Text-Fallback, Abschluss-Feedback, Tagesfortschritt.
 - [ ] **Phase 4 – Streak & Belohnungen:** Nacht-Job, Streak- und Joker-Logik, Pathway, Gutscheine mit Einlösen, Admin-Bereich.
 - [ ] **Phase 5 – Vokabeln & Knowledge:** automatische Vokabelübernahme, Vokabel-Quiz, Knowledge Section mit Schnell-Anlage aus den News.

@@ -20,6 +20,8 @@ Lege damit `.env.local` an (Vorlage: `.env.example`):
 NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<PUBLISHABLE_KEY>
 SUPABASE_SECRET_KEY=<SECRET_KEY>
+ANTHROPIC_API_KEY=<Claude-API-Key>
+JOBS_SECRET=<beliebiger langer Zufallswert>
 ```
 
 Zwei Testkonten anlegen:
@@ -45,7 +47,35 @@ npm run dev
 4. Die zwei echten Konten mit `scripts/create-user.mjs` anlegen (mit URL und Secret Key des
    Live-Projekts in einer separaten Env-Datei, die nicht committet wird).
 5. Auf vercel.com das GitHub-Repo importieren und die Variablen
-   `NEXT_PUBLIC_SUPABASE_URL` und `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` setzen.
+   `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`,
+   `SUPABASE_SECRET_KEY`, `ANTHROPIC_API_KEY` und `JOBS_SECRET` setzen.
+6. Geplante Jobs verbinden (siehe unten).
+
+## Geplante Jobs
+
+`pg_cron` ruft stündlich `POST /api/jobs/morning` auf (Migration
+`20261125120000_lesson_generation.sql`). Die Route arbeitet ab 05:00 Uhr deutscher Zeit
+und nur, wenn die Lektion des Tages noch fehlt. URL und Secret liegen im Supabase Vault –
+einmalig im SQL-Editor des Live-Projekts ausführen:
+
+```sql
+select vault.create_secret('https://<app>.vercel.app', 'ninaai_app_url');
+select vault.create_secret('<JOBS_SECRET>', 'ninaai_jobs_secret');
+```
+
+Fehlen die Secrets (z. B. lokal), tut der Cron-Job nichts. Die Läufe stehen in
+`cron.job_run_details`, die Antworten in `net._http_response`.
+
+Lektion manuell anstoßen (lokal oder live):
+
+```bash
+curl -X POST -H "Authorization: Bearer $JOBS_SECRET" http://localhost:3000/api/jobs/morning
+```
+
+Unabhängig vom Job wird die Lektion beim Öffnen der App erzeugt, falls sie noch fehlt
+(On-Demand-Fallback). Eine Datenbank-Sperre verhindert doppelte Erzeugung; nach drei
+Fehlversuchen gilt der Tag als „ohne Lektion“ (neutral für die Streak). Den letzten Fehler
+zeigt `select date, status, attempts, error from daily_lessons order by date desc;`.
 
 ## Tests
 
