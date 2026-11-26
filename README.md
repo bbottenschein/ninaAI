@@ -22,6 +22,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<PUBLISHABLE_KEY>
 SUPABASE_SECRET_KEY=<SECRET_KEY>
 ANTHROPIC_API_KEY=<Claude-API-Key>
 JOBS_SECRET=<beliebiger langer Zufallswert>
+OPENAI_API_KEY=<OpenAI-Key, für die Spracherkennung im Tutor-Gespräch>
 ```
 
 Zwei Testkonten anlegen:
@@ -48,7 +49,7 @@ npm run dev
    Live-Projekts in einer separaten Env-Datei, die nicht committet wird).
 5. Auf vercel.com das GitHub-Repo importieren und die Variablen
    `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`,
-   `SUPABASE_SECRET_KEY`, `ANTHROPIC_API_KEY` und `JOBS_SECRET` setzen.
+   `SUPABASE_SECRET_KEY`, `ANTHROPIC_API_KEY`, `JOBS_SECRET` und `OPENAI_API_KEY` setzen.
 6. Geplante Jobs verbinden (siehe unten).
 
 ## Geplante Jobs

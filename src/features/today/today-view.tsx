@@ -7,9 +7,11 @@ import { STEPS, isDayComplete, stepStates, type StepKey, type StepState } from "
 import type { TodayData } from "./queries";
 import { AutoRefresh } from "./auto-refresh";
 
-/** Wohin ein Schritt führt, sobald er offen ist (Quiz und Tutor ab Phase 3). */
+/** Wohin ein Schritt führt, sobald er offen ist. */
 const STEP_HREF: Partial<Record<StepKey, string>> = {
   news: "/news",
+  quiz: "/quiz",
+  tutor: "/tutor",
 };
 
 /** Jeder Schritt hat seine eigene Farbe und ein Symbol. */
