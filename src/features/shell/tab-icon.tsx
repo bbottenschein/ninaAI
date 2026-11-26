@@ -5,6 +5,7 @@ const PATHS: Record<Tab["icon"], string> = {
   // Sprössling: Daily Learning wächst jeden Tag (passt zur Blumenwiese).
   learn: "M12 21v-8M12 13c0-4-3-6.5-7.5-6.5 0 4.2 3 6.5 7.5 6.5zM12 13c0-4 3-6.5 7.5-6.5 0 4.2-3 6.5-7.5 6.5z",
   remind: "M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2",
+  journal: "M6 3h11a2 2 0 0 1 2 2v16H7a2 2 0 0 1-2-2V4a1 1 0 0 1 1-1zM5 17a2 2 0 0 1 2-2h12M9 7h6M9 10.5h4",
   admin: "M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z",
 };
 

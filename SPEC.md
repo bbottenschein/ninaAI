@@ -20,16 +20,18 @@ dafür, dass sie dranbleibt.
 ### Module & Navigation
 
 NinAI besteht aus Modulen. Diese Spezifikation beschreibt das Modul **„Daily Learning“**;
-das Modul **„Remind me“** (To-dos und Erinnerungen) steht in [SPEC-remind-me.md](SPEC-remind-me.md).
+das Modul **„Remind me“** (To-dos und Erinnerungen) steht in [SPEC-remind-me.md](SPEC-remind-me.md),
+das Modul **„Journal“** (Abend-Eintrag und Stimmungsverlauf) in [SPEC-journal.md](SPEC-journal.md).
 
 | Tab (untere Leiste) | Pfad | Inhalt |
 |---|---|---|
 | Home | `/` | Wochentag und Datum, Status der Lektion mit „Weiter lernen“, Streak, heute fällige To-dos |
 | Daily Learning | `/learn` | Unter-Tabs: **Lektion** (`/learn`, mit News, Quiz, Tutor), **Vokabeln** (`/vokabeln`), **Knowledge** (`/knowledge`), **Success** (`/success`: Streak, Blumenwiese, Gutscheine) |
 | Remind me | `/remind` | Eingabe und To-Do Overview, Bereiche Work Mode und Life Mode |
+| Journal | `/journal` | Daily Entry (Abend-Eintrag) und Mood Overview; ab 18:00 eine ruhige Karte auf Home |
 
 - Der Admin (Benedikt) hat die Tabs **Home** (Ninas Lektion und Streak, keine To-dos) und
-  **Admin**. „Remind me“ ist privat und für ihn nicht sichtbar.
+  **Admin**. „Remind me“ und „Journal“ sind privat und für ihn nicht sichtbar.
 - Neue Module bekommen einen eigenen Tab bzw. Unter-Tab (`src/features/shell/tabs.ts`).
 
 ## Tagesablauf
