@@ -145,8 +145,8 @@ export function TutorChat({
   const header = (
     <header className="mb-4 flex items-center justify-between gap-4">
       <div>
-        <Link href="/" className="text-sm font-bold text-accent-ink">
-          ← Heute
+        <Link href="/learn" className="text-sm font-bold text-accent-ink">
+          ← Lektion
         </Link>
         <h1 className="text-[1.75rem] leading-tight font-extrabold tracking-tight">Tutor-Gespräch</h1>
       </div>
@@ -222,7 +222,7 @@ export function TutorChat({
             <button type="button" onClick={start} className="btn-secondary">
               Nochmal 🔁
             </button>
-            <Link href="/" className="btn-primary text-center">
+            <Link href="/learn" className="btn-primary text-center">
               Fertig ›
             </Link>
           </div>

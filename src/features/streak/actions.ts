@@ -7,5 +7,5 @@ import { createClient } from "@/lib/supabase/server";
 export async function dismissJokerNotice() {
   const supabase = await createClient();
   await supabase.rpc("dismiss_joker_notice");
-  revalidatePath("/");
+  revalidatePath("/", "layout");
 }

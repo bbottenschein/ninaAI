@@ -62,8 +62,8 @@ export function NewsReader({
     <>
       <header className="mb-4 flex items-center justify-between gap-4">
         <div>
-          <Link href="/" className="text-sm font-bold text-accent-ink">
-            ← Heute
+          <Link href="/learn" className="text-sm font-bold text-accent-ink">
+            ← Lektion
           </Link>
           <h1 className="text-[1.75rem] leading-tight font-extrabold tracking-tight">
             News des Tages
@@ -117,8 +117,8 @@ export function NewsReader({
           <Mouse mood="party" className="mx-auto size-20" />
           <p className="mt-2 text-lg font-extrabold">Alle 3 Meldungen gelesen!</p>
           <p className="mt-1 text-sm text-muted">Als Nächstes kommt das Quiz of the Day.</p>
-          <Link href={readOnly ? "/" : "/quiz"} className="btn-primary mt-4 inline-block">
-            {readOnly ? "Zurück zu Heute" : "Zum Quiz ›"}
+          <Link href={readOnly ? "/learn" : "/quiz"} className="btn-primary mt-4 inline-block">
+            {readOnly ? "Zurück zur Lektion" : "Zum Quiz ›"}
           </Link>
         </div>
       )}

@@ -17,6 +17,21 @@ dafür, dass sie dranbleibt.
 - **Prinzipien:** kurz und schaffbar, verständlich statt fachsprachlich, neutral formuliert, modular erweiterbar.
 - **Plattform:** Web-App, die sich auf dem Handy wie eine App installieren lässt (PWA).
 
+### Module & Navigation
+
+NinAI besteht aus Modulen. Diese Spezifikation beschreibt das Modul **„Daily Learning“**;
+das Modul **„Remind me“** (To-dos und Erinnerungen) steht in [SPEC-remind-me.md](SPEC-remind-me.md).
+
+| Tab (untere Leiste) | Pfad | Inhalt |
+|---|---|---|
+| Home | `/` | Wochentag und Datum, Status der Lektion mit „Weiter lernen“, Streak, heute fällige To-dos |
+| Daily Learning | `/learn` | Unter-Tabs: **Lektion** (`/learn`, mit News, Quiz, Tutor), **Vokabeln** (`/vokabeln`), **Knowledge** (`/knowledge`), **Success** (`/success`: Streak, Blumenwiese, Gutscheine) |
+| Remind me | `/remind` | Eingabe und To-Do Overview, Bereiche Work Mode und Life Mode |
+
+- Der Admin (Benedikt) hat die Tabs **Home** (Ninas Lektion und Streak, keine To-dos) und
+  **Admin**. „Remind me“ ist privat und für ihn nicht sichtbar.
+- Neue Module bekommen einen eigenen Tab bzw. Unter-Tab (`src/features/shell/tabs.ts`).
+
 ## Tagesablauf
 
 Ein Tag gilt als absolviert, wenn alle drei Schritte in dieser Reihenfolge
@@ -266,7 +281,7 @@ Tageslektion wird einmal erzeugt und gespeichert, nicht bei jedem Öffnen.
 
 Sechs Phasen, jede endet mit einer nutzbaren Version. Nach Phase 3 kann sie die App schon täglich nutzen.
 
-- [x] **Phase 1 – Grundgerüst:** Next.js-PWA, Supabase-Projekt, Login für 2 Konten, Tab-Navigation (Heute, Vokabeln, Knowledge, Gutscheine).
+- [x] **Phase 1 – Grundgerüst:** Next.js-PWA, Supabase-Projekt, Login für 2 Konten, Tab-Navigation (seit „Remind me“: Home, Daily Learning, Remind me – siehe Module & Navigation).
 - [x] **Phase 2 – News des Tages:** Morgen-Job, News-Ansicht mit EN/DE-Toggle, Begriffs-Erklärungen, Personen mit Amt.
 - [x] **Phase 3 – Quiz & Tutor:** Quiz of the Day, Tutor-Gespräch per Stimme mit Text-Fallback, Abschluss-Feedback, Tagesfortschritt.
 - [x] **Phase 4 – Streak & Belohnungen:** Nacht-Job, Streak- und Joker-Logik, Pathway, Gutscheine mit Einlösen, Admin-Bereich.

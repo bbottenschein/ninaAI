@@ -1,7 +1,8 @@
 # NinAI – Projektregeln
 
-Private Englisch-Lern-App (PWA) für Nina, Admin ist Benedikt. Die vollständige
-Spezifikation steht in `SPEC.md` – vor größeren Änderungen lesen.
+Private App (PWA) für Nina, Admin ist Benedikt. Module: „Daily Learning“ (Englisch & Politik,
+Spezifikation in `SPEC.md`) und „Remind me“ (To-dos, `SPEC-remind-me.md`) – vor größeren
+Änderungen lesen.
 
 @AGENTS.md
 
@@ -24,8 +25,9 @@ Cron läuft in UTC: Jobs laufen stündlich und sind idempotent, statt auf eine f
 
 - `src/app/` – nur Routing: Seiten sind dünn und rufen Feature-Komponenten auf.
   - `(app)/` – alles hinter dem Login, mit Tab-Leiste.
+  - `(app)/(learn)/` – Daily Learning mit Unter-Tabs (Lektion, Vokabeln, Knowledge, Success).
   - `login/` – öffentlich.
-- `src/features/<modul>/` – ein Ordner pro Feature-Modul (`today`, `news`, `lesson`, `vocab`, `knowledge`,
+- `src/features/<modul>/` – ein Ordner pro Feature-Modul (`home`, `today`, `news`, `lesson`, `quiz`, `tutor`, `vocab`, `knowledge`, `streak`, `remind`, `notifications`,
   `rewards`, `admin`, `auth`, `shell`). Komponenten, Server Actions, Queries und reine Logik
   des Moduls liegen dort. Ein neues Feature = neuer Ordner + Eintrag in `src/features/shell/tabs.ts`.
 - `src/lib/` – modulübergreifende Helfer (Supabase-Clients, Datum, Env).
@@ -39,6 +41,7 @@ Cron läuft in UTC: Jobs laufen stündlich und sind idempotent, statt auf eine f
   `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` dürfen in den Browser.
 - Datenzugriff aus dem Browser läuft immer mit dem Nutzer-Token und damit über RLS.
   Der Secret Key (`SUPABASE_SECRET_KEY`) wird nur in Jobs und Skripten verwendet.
+- „Remind me“ ist privat: RLS nur für die Besitzerin, der Admin bekommt keinen Zugriff.
 - Rollen stehen in `profiles.role` und werden nur über `app_metadata` gesetzt
   (`scripts/create-user.mjs`), nie aus dem Client.
 - Statuswechsel von Gutscheinen nur über die DB-Funktionen `redeem_reward` / `fulfill_reward`.

@@ -1,12 +1,10 @@
 import Link from "next/link";
-import { addDays, formatLongDate } from "@/lib/date";
-import { logout } from "@/features/auth/actions";
+import { formatLongDate } from "@/lib/date";
 import { Mouse } from "@/features/shell/mouse";
-import { HeaderButton, PageHeader } from "@/features/shell/page-header";
+import { PageHeader } from "@/features/shell/page-header";
 import { STEPS, isDayComplete, stepStates, type StepKey, type StepState } from "./steps";
 import type { TodayData } from "./queries";
 import { AutoRefresh } from "./auto-refresh";
-import { JokerNotice } from "@/features/streak/joker-notice";
 
 /** Wohin ein Schritt führt, sobald er offen ist. */
 const STEP_HREF: Partial<Record<StepKey, string>> = {
@@ -22,15 +20,8 @@ const STEP_STYLE: Record<StepKey, { emoji: string; bubble: string }> = {
   tutor: { emoji: "💬", bubble: "bg-mint-soft" },
 };
 
-export function TodayView({
-  date,
-  greetingName,
-  data,
-}: {
-  date: string;
-  greetingName: string;
-  data: TodayData;
-}) {
+/** Lektion des Tages (Daily Learning › Lektion): Schritte News, Quiz, Tutor. */
+export function TodayView({ date, data }: { date: string; data: TodayData }) {
   const states = stepStates(data.progress);
   const complete = isDayComplete(data.progress);
   const generating = data.lessonPhase === "generating" || data.lessonPhase === "start";
@@ -40,19 +31,8 @@ export function TodayView({
       <PageHeader
         icon={<Mouse mood={complete ? "party" : "happy"} className="size-14 shrink-0" />}
         subtitle={formatLongDate(date)}
-        title={data.playerName ? `Heute bei ${data.playerName}` : `Hi ${greetingName}!`}
-        action={
-          <form action={logout}>
-            <HeaderButton>Abmelden</HeaderButton>
-          </form>
-        }
+        title={data.playerName ? `Lektion von ${data.playerName}` : "Deine Lektion"}
       />
-
-      {data.jokerNotice && (
-        <JokerNotice
-          label={data.jokerNotice === addDays(date, -1) ? "gestern" : `am ${formatLongDate(data.jokerNotice)}`}
-        />
-      )}
 
       {data.streak && (
         <Link href="/success" className="mb-6 grid grid-cols-3 gap-3 text-center transition active:scale-[0.98]">

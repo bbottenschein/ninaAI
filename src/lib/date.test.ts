@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { addDays, berlinDate, berlinHour, formatLongDate } from "./date";
+import { addDays, berlinDate, berlinHour, berlinParts, berlinToUtc, formatLongDate, weekday } from "./date";
 
 describe("berlinDate", () => {
   it("nutzt Winterzeit (UTC+1): 23:30 UTC ist schon der nächste Tag", () => {
@@ -44,5 +44,29 @@ describe("berlinHour", () => {
     expect(berlinHour(new Date("2026-11-25T04:00:00Z"))).toBe(5);
     expect(berlinHour(new Date("2026-07-01T03:00:00Z"))).toBe(5);
     expect(berlinHour(new Date("2026-11-25T23:30:00Z"))).toBe(0);
+  });
+});
+
+describe("berlinToUtc", () => {
+  it("rechnet Winter- und Sommerzeit um", () => {
+    expect(berlinToUtc("2026-11-27", "15:00").toISOString()).toBe("2026-11-27T14:00:00.000Z");
+    expect(berlinToUtc("2026-07-01", "09:00").toISOString()).toBe("2026-07-01T07:00:00.000Z");
+  });
+
+  it("stimmt an den Tagen der Zeitumstellung", () => {
+    expect(berlinToUtc("2026-03-29", "09:00").toISOString()).toBe("2026-03-29T07:00:00.000Z");
+    expect(berlinToUtc("2026-10-25", "09:00").toISOString()).toBe("2026-10-25T08:00:00.000Z");
+    expect(berlinToUtc("2026-03-29", "00:30").toISOString()).toBe("2026-03-28T23:30:00.000Z");
+  });
+
+  it("ist die Umkehrung von berlinParts", () => {
+    expect(berlinParts(berlinToUtc("2026-12-31", "23:45"))).toEqual({ date: "2026-12-31", time: "23:45" });
+  });
+});
+
+describe("weekday", () => {
+  it("liefert den Wochentag", () => {
+    expect(weekday("2026-11-28")).toBe(6); // Samstag
+    expect(weekday("2026-11-30")).toBe(1); // Montag
   });
 });

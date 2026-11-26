@@ -19,6 +19,13 @@
   --mint-soft: #dcf5ea;
   --sun: #8a5200;
   --sun-soft: #fff1d6;
+  /* Remind me: Work Mode gedecktes Altrosa, Life Mode helles Blütenrosa */
+  --work: #8a4f5f;
+  --work-soft: #f2e4e8;
+  --work-dot: #b07a88;
+  --life: #b3245f;
+  --life-soft: #ffe0ec;
+  --life-dot: #ff7aa8;
   --success: #1f6e4f;
   --danger: #c0392b;
   --shadow: rgb(214 51 108 / 0.12);
@@ -41,6 +48,12 @@
     --mint-soft: #1d3a30;
     --sun: #ffc867;
     --sun-soft: #3d3020;
+    --work: #e0aab8;
+    --work-soft: #3a2a30;
+    --work-dot: #c48a99;
+    --life: #ff9cc0;
+    --life-soft: #45203a;
+    --life-dot: #ff7aa8;
     --success: #6fd3a6;
     --danger: #ef7a6b;
     --shadow: rgb(0 0 0 / 0.35);
@@ -63,6 +76,12 @@
   --color-mint-soft: var(--mint-soft);
   --color-sun: var(--sun);
   --color-sun-soft: var(--sun-soft);
+  --color-work: var(--work);
+  --color-work-soft: var(--work-soft);
+  --color-work-dot: var(--work-dot);
+  --color-life: var(--life);
+  --color-life-soft: var(--life-soft);
+  --color-life-dot: var(--life-dot);
   --color-success: var(--success);
   --color-danger: var(--danger);
   --font-sans: var(--font-nunito);

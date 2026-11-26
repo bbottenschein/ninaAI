@@ -15,7 +15,7 @@ export default async function QuizPage() {
   const [data, cookieStore] = await Promise.all([loadQuiz(date, user), cookies()]);
 
   // Schritte werden nacheinander freigeschaltet: erst alle News lesen.
-  if (!data) redirect("/");
+  if (!data) redirect("/learn");
   if (user.role === "player" && !data.newsDone) redirect("/news");
 
   return (
