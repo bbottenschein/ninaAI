@@ -25,7 +25,7 @@ export async function redeemReward(id: string): Promise<{ error?: string }> {
   } catch (pushError) {
     console.error("[rewards] Benachrichtigung fehlgeschlagen", pushError);
   }
-  revalidatePath("/gutscheine");
+  revalidatePath("/success");
   revalidatePath("/admin");
   return {};
 }
@@ -44,7 +44,7 @@ export async function fulfillReward(id: string): Promise<{ error?: string }> {
   const { error } = await supabase.rpc("fulfill_reward", { p_reward_id: id });
   if (error) return { error: "Konnte nicht als erledigt markiert werden." };
   revalidatePath("/admin");
-  revalidatePath("/gutscheine");
+  revalidatePath("/success");
   return {};
 }
 
@@ -67,6 +67,6 @@ export async function updateRewardType(
     .eq("type", type);
   if (error) return { error: "Konnte nicht gespeichert werden." };
   revalidatePath("/admin");
-  revalidatePath("/gutscheine");
+  revalidatePath("/success");
   return { ok: true };
 }

@@ -16,7 +16,7 @@ const PLAYER_TABS: Tab[] = [
   TODAY,
   { href: "/vokabeln", label: "Vokabeln", icon: "vocab" },
   { href: "/knowledge", label: "Knowledge", icon: "knowledge" },
-  { href: "/gutscheine", label: "Gutscheine", icon: "rewards" },
+  { href: "/success", label: "Success", icon: "rewards" },
 ];
 
 const ADMIN_TABS: Tab[] = [

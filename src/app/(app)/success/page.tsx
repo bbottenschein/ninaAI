@@ -5,7 +5,7 @@ import { loadRewards } from "@/features/rewards/queries";
 import { RewardsView } from "@/features/rewards/rewards-view";
 import { loadStreakView } from "@/features/streak/queries";
 
-export const metadata: Metadata = { title: "Belohnungen" };
+export const metadata: Metadata = { title: "Success" };
 
 export default async function RewardsPage() {
   const user = await getCurrentUser();

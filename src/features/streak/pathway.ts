@@ -24,6 +24,8 @@ export function buildPathway(input: {
   current: number;
   today: string;
   todayDone: boolean;
+  /** Wie viele zurückliegende Felder sichtbar sind (Standard 10). */
+  maxPast?: number;
 }): { nodes: PathNode[]; hiddenPast: number } {
   const past: PathNode[] = input.runDays
     .filter((d) => d.result === "completed" || d.result === "joker")
@@ -35,7 +37,7 @@ export function buildPathway(input: {
       isToday: d.date === input.today,
     }));
 
-  const visiblePast = past.slice(-MAX_PAST);
+  const visiblePast = past.slice(-(input.maxPast ?? MAX_PAST));
   const nodes: PathNode[] = [...visiblePast];
 
   let next = input.current + 1;

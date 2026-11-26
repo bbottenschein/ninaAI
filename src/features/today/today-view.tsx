@@ -55,7 +55,7 @@ export function TodayView({
       )}
 
       {data.streak && (
-        <Link href="/gutscheine" className="mb-6 grid grid-cols-3 gap-3 text-center transition active:scale-[0.98]">
+        <Link href="/success" className="mb-6 grid grid-cols-3 gap-3 text-center transition active:scale-[0.98]">
           <Stat emoji="🔥" value={data.streak.current} label="Streak" tint="bg-accent-soft text-accent-ink" />
           <Stat emoji="🏆" value={data.streak.longest} label="Längste" tint="bg-sun-soft text-sun" />
           <Stat

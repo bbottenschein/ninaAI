@@ -7,7 +7,7 @@ describe("tabsFor", () => {
       "Heute",
       "Vokabeln",
       "Knowledge",
-      "Gutscheine",
+      "Success",
     ]);
   });
 
