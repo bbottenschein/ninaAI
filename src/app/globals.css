@@ -1,8 +1,11 @@
 @import "tailwindcss";
 
-/* Farben: clean mit rosa Akzent, dazu Lavendel und Mint als sanfte Nebentöne.
-   Kontraste geprüft: accent/on-accent ≥ 4,5:1, muted auf surface ≥ 4,5:1. */
-:root {
+/* Designs (SPEC-settings): Flower (Standard), Clean Light, Dark, Cozy Cat, Automatisch.
+   Jeder Modus ist ein Satz Farbvariablen auf [data-theme] – auch auf einzelnen Elementen
+   (Vorschau-Kacheln). Kontraste geprüft: accent/on-accent und muted/surface ≥ 4,5:1. */
+:root,
+[data-theme="flower"],
+[data-theme="auto"] {
   --background: #fff7fa;
   --surface: #ffffff;
   --foreground: #2b1d2a;
@@ -11,7 +14,6 @@
   --accent: #d6336c;
   --on-accent: #ffffff;
   --accent-soft: #ffe3ee;
-  /* Text in Akzentfarbe auf hellen Flächen (Chips, Links) */
   --accent-ink: #b0245a;
   --lavender: #5a48bf;
   --lavender-soft: #eee9ff;
@@ -19,7 +21,6 @@
   --mint-soft: #dcf5ea;
   --sun: #8a5200;
   --sun-soft: #fff1d6;
-  /* Remind me: Work Mode gedecktes Altrosa, Life Mode helles Blütenrosa */
   --work: #8a4f5f;
   --work-soft: #f2e4e8;
   --work-dot: #b07a88;
@@ -29,35 +30,153 @@
   --success: #1f6e4f;
   --danger: #c0392b;
   --shadow: rgb(214 51 108 / 0.12);
+  --tone-1: #ffe9f1;
+  --tone-2: #ffd1e1;
+  --tone-3: #ffb0cb;
+  --tone-4: #f78cb2;
+  --tone-5: #e45b91;
+  --tone-5-ink: #ffffff;
+}
+
+[data-theme="clean"] {
+  --background: #f7f4ef;
+  --surface: #ffffff;
+  --foreground: #2a2724;
+  --muted: #6b655e;
+  --border: #e6e0d8;
+  --accent: #3f3a35;
+  --on-accent: #ffffff;
+  --accent-soft: #ece6dd;
+  --accent-ink: #3f3a35;
+  --lavender: #4d5866;
+  --lavender-soft: #e8ebee;
+  --mint: #4a6650;
+  --mint-soft: #e4ece3;
+  --sun: #7a5a2e;
+  --sun-soft: #f3ead9;
+  --work: #5c544c;
+  --work-soft: #ebe6df;
+  --work-dot: #9a8f83;
+  --life: #7a5a44;
+  --life-soft: #f1e6da;
+  --life-dot: #c19a7b;
+  --success: #4a6650;
+  --danger: #b23a2e;
+  --shadow: rgb(63 58 53 / 0.10);
+  --tone-1: #efeae3;
+  --tone-2: #ddd5ca;
+  --tone-3: #c4b8a8;
+  --tone-4: #9e917f;
+  --tone-5: #5f5448;
+  --tone-5-ink: #ffffff;
+}
+
+[data-theme="cat"] {
+  --background: #f6efe6;
+  --surface: #fffaf3;
+  --foreground: #3b2a20;
+  --muted: #7a6352;
+  --border: #eadbc8;
+  --accent: #8b5a3c;
+  --on-accent: #ffffff;
+  --accent-soft: #f1e1cf;
+  --accent-ink: #74462b;
+  --lavender: #9a4a32;
+  --lavender-soft: #f6e0d6;
+  --mint: #5a6b34;
+  --mint-soft: #e8ecd6;
+  --sun: #8a5a00;
+  --sun-soft: #fbe9c6;
+  --work: #6b5040;
+  --work-soft: #efe3d6;
+  --work-dot: #a88a72;
+  --life: #a0522d;
+  --life-soft: #f8e3d4;
+  --life-dot: #d9895a;
+  --success: #5a6b34;
+  --danger: #b23a2e;
+  --shadow: rgb(139 90 60 / 0.14);
+  --tone-1: #f5e6d3;
+  --tone-2: #e9cba8;
+  --tone-3: #d6a878;
+  --tone-4: #c8935f;
+  --tone-5: #8b5a3c;
+  --tone-5-ink: #ffffff;
+}
+
+[data-theme="dark"] {
+  --background: #141216;
+  --surface: #1f1c22;
+  --foreground: #f2eef3;
+  --muted: #a89fa8;
+  --border: #322d36;
+  --accent: #ff8fb3;
+  --on-accent: #2b0e1c;
+  --accent-soft: #3a2432;
+  --accent-ink: #ffa6c4;
+  --lavender: #b7a9ff;
+  --lavender-soft: #2a2740;
+  --mint: #6fd3a6;
+  --mint-soft: #1b332b;
+  --sun: #ffc867;
+  --sun-soft: #362c1c;
+  --work: #e0aab8;
+  --work-soft: #33272c;
+  --work-dot: #c48a99;
+  --life: #ff9cc0;
+  --life-soft: #3e1f33;
+  --life-dot: #ff7aa8;
+  --success: #6fd3a6;
+  --danger: #ef7a6b;
+  --shadow: rgb(0 0 0 / 0.4);
+  --tone-1: #3a2432;
+  --tone-2: #5a2e45;
+  --tone-3: #8a3d63;
+  --tone-4: #9e4570;
+  --tone-5: #ff8fb3;
+  --tone-5-ink: #2b0e1c;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #1d151f;
-    --surface: #281e2b;
-    --foreground: #f8eef4;
-    --muted: #b3a0ad;
-    --border: #3b2d3f;
-    --accent: #ff7aa8;
+  [data-theme="auto"] {
+    --background: #141216;
+    --surface: #1f1c22;
+    --foreground: #f2eef3;
+    --muted: #a89fa8;
+    --border: #322d36;
+    --accent: #ff8fb3;
     --on-accent: #2b0e1c;
-    --accent-soft: #43233a;
-    --accent-ink: #ff9cc0;
+    --accent-soft: #3a2432;
+    --accent-ink: #ffa6c4;
     --lavender: #b7a9ff;
-    --lavender-soft: #2e2848;
+    --lavender-soft: #2a2740;
     --mint: #6fd3a6;
-    --mint-soft: #1d3a30;
+    --mint-soft: #1b332b;
     --sun: #ffc867;
-    --sun-soft: #3d3020;
+    --sun-soft: #362c1c;
     --work: #e0aab8;
-    --work-soft: #3a2a30;
+    --work-soft: #33272c;
     --work-dot: #c48a99;
     --life: #ff9cc0;
-    --life-soft: #45203a;
+    --life-soft: #3e1f33;
     --life-dot: #ff7aa8;
     --success: #6fd3a6;
     --danger: #ef7a6b;
-    --shadow: rgb(0 0 0 / 0.35);
+    --shadow: rgb(0 0 0 / 0.4);
+    --tone-1: #3a2432;
+    --tone-2: #5a2e45;
+    --tone-3: #8a3d63;
+    --tone-4: #9e4570;
+    --tone-5: #ff8fb3;
+    --tone-5-ink: #2b0e1c;
   }
+}
+
+/* Formularelemente und Scrollbalken passend hell/dunkel. */
+:root { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] { color-scheme: dark; }
 }
 
 @theme inline {
@@ -82,6 +201,12 @@
   --color-life: var(--life);
   --color-life-soft: var(--life-soft);
   --color-life-dot: var(--life-dot);
+  --color-tone-1: var(--tone-1);
+  --color-tone-2: var(--tone-2);
+  --color-tone-3: var(--tone-3);
+  --color-tone-4: var(--tone-4);
+  --color-tone-5: var(--tone-5);
+  --color-tone-5-ink: var(--tone-5-ink);
   --color-success: var(--success);
   --color-danger: var(--danger);
   --font-sans: var(--font-nunito);

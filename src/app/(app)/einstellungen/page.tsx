@@ -8,13 +8,14 @@ import { PushSettings } from "@/features/notifications/push-settings";
 import { PageHeader } from "@/features/shell/page-header";
 import { PushPreferences } from "@/features/settings/push-preferences";
 import { prefsFor } from "@/features/settings/prefs";
-import { loadPushPrefs } from "@/features/settings/queries";
+import { loadPushPrefs, loadTheme } from "@/features/settings/queries";
+import { ThemePicker } from "@/features/settings/theme-picker";
 
 export const metadata: Metadata = { title: "Einstellungen" };
 
 export default async function SettingsPage() {
   const user = await getCurrentUser();
-  const prefs = await loadPushPrefs(user);
+  const [prefs, theme] = await Promise.all([loadPushPrefs(user), loadTheme(user.id)]);
 
   return (
     <>
@@ -38,6 +39,9 @@ export default async function SettingsPage() {
       />
       <PushPreferences prefs={prefsFor(user.role)} initial={prefs} />
       {user.role === "player" && <MotionPermission variant="row" />}
+
+      <h2 className="mt-8 mb-1 px-1 text-sm font-extrabold tracking-wide text-muted uppercase">🎨 Design</h2>
+      <ThemePicker initial={theme} />
 
       <h2 className="mt-8 mb-1 px-1 text-sm font-extrabold tracking-wide text-muted uppercase">👤 Konto</h2>
       <section className="card mt-3 flex items-center gap-3">
