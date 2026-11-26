@@ -2,7 +2,7 @@ import Link from "next/link";
 import { addDays, formatLongDate } from "@/lib/date";
 import { REWARD_EMOJI } from "@/features/rewards/labels";
 import { nextMilestone } from "@/features/rewards/milestones";
-import { Mouse } from "@/features/shell/mouse";
+import { Mascot } from "@/features/shell/mascot";
 import { PageHeader } from "@/features/shell/page-header";
 import { JokerNotice } from "@/features/streak/joker-notice";
 import { AutoRefresh } from "@/features/today/auto-refresh";
@@ -44,7 +44,7 @@ export function HomeHeader({
   return (
     <>
       <PageHeader
-        icon={<Mouse mood={doneSteps === 3 ? "party" : "happy"} className="size-14 shrink-0" />}
+        icon={<Mascot mood={doneSteps === 3 ? "party" : "happy"} className="size-14 shrink-0" />}
         subtitle={formatLongDate(date)}
         title={`Hi ${name}!`}
         action={

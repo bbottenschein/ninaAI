@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import type { QuizQuestion } from "@/features/lesson/schema";
-import { Mouse } from "@/features/shell/mouse";
+import { Mascot } from "@/features/shell/mascot";
 import type { NewsLang } from "@/features/news/lang";
 import { LangToggle, saveNewsLang } from "@/features/news/lang-toggle";
 import { answerQuizQuestion } from "./actions";
@@ -76,7 +76,7 @@ export function QuizRunner({
       <>
         {header}
         <div className="card animate-pop bg-accent-soft text-center">
-          <Mouse mood="party" className="mx-auto size-24" />
+          <Mascot mood="party" className="mx-auto size-24" />
           <p className="mt-2 text-sm font-bold text-muted">Dein Ergebnis</p>
           <p className="text-5xl font-extrabold tabular-nums">
             {state.score}/{quiz.length}

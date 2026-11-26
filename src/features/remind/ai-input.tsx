@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore, useTransition } from "react";
-import { Mouse } from "@/features/shell/mouse";
+import { Mascot } from "@/features/shell/mascot";
 import { recorderSupported, useRecorder, type Recording } from "@/features/tutor/use-recorder";
 import { deleteTodo, saveTodo, setTodoDone, type TodoInput } from "./actions";
 import { interpretTodoInput } from "./ai-actions";
@@ -191,7 +191,7 @@ export function AiInput({
         </div>
         {(busy || recorder.recording) && (
           <p className="flex items-center gap-2 px-3 pt-2 text-sm text-muted" role="status">
-            <Mouse mood="sleepy" className="size-6 animate-wiggle" />
+            <Mascot mood="sleepy" className="size-6 animate-wiggle" />
             {recorder.recording ? `Ich höre zu … ${recorder.seconds}s` : transcribing ? "Ich schreibe mit …" : "Die Maus denkt mit …"}
           </p>
         )}

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { formatLongDate } from "@/lib/date";
-import { Mouse } from "@/features/shell/mouse";
+import { Mascot } from "@/features/shell/mascot";
 import { PageHeader } from "@/features/shell/page-header";
 import { STEPS, isDayComplete, stepStates, type StepKey, type StepState } from "./steps";
 import type { TodayData } from "./queries";
@@ -29,7 +29,7 @@ export function TodayView({ date, data }: { date: string; data: TodayData }) {
   return (
     <>
       <PageHeader
-        icon={<Mouse mood={complete ? "party" : "happy"} className="size-14 shrink-0" />}
+        icon={<Mascot mood={complete ? "party" : "happy"} className="size-14 shrink-0" />}
         subtitle={formatLongDate(date)}
         title={data.playerName ? `Lektion von ${data.playerName}` : "Deine Lektion"}
       />
@@ -49,7 +49,7 @@ export function TodayView({ date, data }: { date: string; data: TodayData }) {
 
       {generating && (
         <div className="card mb-4 flex items-center gap-4" role="status">
-          <Mouse mood="sleepy" className="size-14 shrink-0 animate-wiggle" />
+          <Mascot mood="sleepy" className="size-14 shrink-0 animate-wiggle" />
           <div>
             <p className="font-bold">Die Maus sammelt gerade die News …</p>
             <p className="text-sm text-muted">Das dauert ein bis zwei Minuten.</p>
@@ -60,7 +60,7 @@ export function TodayView({ date, data }: { date: string; data: TodayData }) {
 
       {data.lessonPhase === "unavailable" && (
         <div className="card mb-4 flex items-center gap-4">
-          <Mouse mood="sleepy" className="size-14 shrink-0" />
+          <Mascot mood="sleepy" className="size-14 shrink-0" />
           <p className="text-sm text-muted">
             Heute gibt es leider keine Lektion – die News konnten nicht geladen werden. Dieser Tag
             zählt nicht gegen deine Streak.
@@ -116,7 +116,7 @@ export function TodayView({ date, data }: { date: string; data: TodayData }) {
 
       {complete && (
         <div className="card mt-6 animate-pop bg-accent-soft text-center">
-          <Mouse mood="party" className="mx-auto size-20" />
+          <Mascot mood="party" className="mx-auto size-20" />
           <p className="mt-2 text-lg font-extrabold">Geschafft für heute! 🎉</p>
           <p className="text-sm text-muted">
             {data.streak ? `Deine Streak steht jetzt bei ${data.streak.current} 🔥` : "Die Maus ist stolz auf dich."}

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
 import { formatLongDate } from "@/lib/date";
-import { Mouse } from "@/features/shell/mouse";
+import { Mascot } from "@/features/shell/mascot";
 import { PageHeader } from "@/features/shell/page-header";
 import { EntryForm, EntryView } from "./entry-form";
 import type { EntryTexts, JournalFeedback } from "./feedback";
@@ -68,7 +68,7 @@ export function JournalScreen({
 
   return (
     <>
-      <PageHeader icon={<Mouse className="size-14 shrink-0" />} title="Journal" subtitle={formatLongDate(today)} />
+      <PageHeader icon={<Mascot className="size-14 shrink-0" />} title="Journal" subtitle={formatLongDate(today)} />
 
       {!seen && !noticeClosed && (
         <div className="card mb-4 flex items-start gap-3 bg-lavender-soft text-sm" role="note">
@@ -132,7 +132,7 @@ export function JournalScreen({
           {saved ? (
             <>
               <div className="card animate-pop bg-accent-soft text-center">
-                <Mouse mood="party" className="mx-auto size-20" />
+                <Mascot mood="party" className="mx-auto size-20" />
                 <p className="mt-2 text-lg font-extrabold">Danke fürs Schreiben 🌸</p>
                 <p className="text-sm text-muted">Dein Eintrag ist gespeichert.</p>
                 <button type="button" onClick={() => setSaved(null)} className="btn-secondary mt-4">

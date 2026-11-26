@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
-import { Mouse } from "@/features/shell/mouse";
+import { Mascot } from "@/features/shell/mascot";
 import { PageHeader } from "@/features/shell/page-header";
 import { answerVocab, deleteVocab } from "./actions";
 import {
@@ -42,7 +42,7 @@ export function VocabScreen({ words }: { words: VocabWord[] }) {
   return (
     <>
       <PageHeader
-        icon={<Mouse className="size-14 shrink-0" />}
+        icon={<Mascot className="size-14 shrink-0" />}
         title="Vokabeln"
         subtitle={`${words.length} Wörter · ${learned} gelernt`}
       />
@@ -232,7 +232,7 @@ function VocabQuiz({
   if (done) {
     return (
       <div className="card animate-pop bg-lavender-soft text-center">
-        <Mouse mood="party" className="mx-auto size-24" />
+        <Mascot mood="party" className="mx-auto size-24" />
         <p className="mt-2 text-sm font-bold text-muted">Runde geschafft</p>
         <p className="text-5xl font-extrabold tabular-nums">
           {score}/{questions.length}

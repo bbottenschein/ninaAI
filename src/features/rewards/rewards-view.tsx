@@ -1,5 +1,6 @@
-import { Mouse } from "@/features/shell/mouse";
+import { Mascot } from "@/features/shell/mascot";
 import { PageHeader } from "@/features/shell/page-header";
+import { MotifText } from "@/features/shell/motif-text";
 import { Meadow } from "@/features/streak/meadow";
 import { buildPathway } from "@/features/streak/pathway";
 import type { StreakView } from "@/features/streak/queries";
@@ -15,7 +16,7 @@ const STATUS_CHIP = {
   erfüllt: "bg-mint-soft text-mint",
 } as const;
 
-/** Success-Bereich: Streak, Blumenwiese, Erklärung und (aufklappbar) die Gutscheine. */
+/** Success-Bereich: Streak, Pathway (Blumenwiese bzw. Motiv des Designs), Erklärung und (aufklappbar) die Gutscheine. */
 export function RewardsView({
   streak,
   rewards,
@@ -43,7 +44,7 @@ export function RewardsView({
 
   return (
     <>
-      <PageHeader icon={<Mouse mood={current > 0 ? "happy" : "sleepy"} className="size-14 shrink-0" />} title="Success" />
+      <PageHeader icon={<Mascot mood={current > 0 ? "happy" : "sleepy"} className="size-14 shrink-0" />} title="Success" />
 
       {/* Streak */}
       <section className="card mb-6 bg-accent-soft">
@@ -52,7 +53,18 @@ export function RewardsView({
           <div>
             <p className="text-lg font-extrabold">{current === 1 ? "Tag" : "Tage"} Streak 🔥</p>
             <p className="text-sm text-muted">
-              {streak.todayDone ? "Heute schon geschafft!" : current > 0 ? "Bleib dran – heute zählt!" : "Heute fängt deine Wiese an."}
+              {streak.todayDone ? (
+                "Heute schon geschafft!"
+              ) : current > 0 ? (
+                "Bleib dran – heute zählt!"
+              ) : (
+                <MotifText
+                  flower="Heute fängt deine Wiese an."
+                  clean="Heute fängt dein Blätterpfad an."
+                  dark="Heute fängt dein Sternenhimmel an."
+                  cat="Heute fängt dein Pfotenpfad an."
+                />
+              )}
             </p>
           </div>
         </div>
@@ -71,8 +83,10 @@ export function RewardsView({
         </p>
       </section>
 
-      {/* Pathway als Blumenwiese */}
-      <h2 className="mb-2 font-extrabold">Deine Blumenwiese</h2>
+      {/* Pathway: Blumenwiese bzw. Motiv des Designs */}
+      <h2 className="mb-2 font-extrabold">
+        <MotifText flower="Deine Blumenwiese" clean="Dein Blätterpfad" dark="Dein Sternenhimmel" cat="Dein Pfotenpfad" />
+      </h2>
       <section className="mb-6 rounded-3xl border border-border shadow-soft">
         <Meadow nodes={meadow.nodes} hiddenPast={meadow.hiddenPast} />
       </section>
@@ -80,8 +94,18 @@ export function RewardsView({
       {/* Erklärung */}
       <h2 className="mb-2 font-extrabold">So funktioniert&apos;s</h2>
       <ul className="card mb-6 flex flex-col gap-2 text-sm">
-        <li>🌸 Jeder geschaffte Tag lässt eine Blume blühen.</li>
-        <li>🍀 Alle 10 Tage gibt es einen Joker – er rettet einen verpassten Tag und wird zum Glücksklee.</li>
+        <li>
+          <MotifText
+            flower="🌸 Jeder geschaffte Tag lässt eine Blume blühen."
+            clean="🍃 Jeder geschaffte Tag lässt ein Blatt wachsen."
+            dark="⭐ Jeder geschaffte Tag lässt einen Stern leuchten."
+            cat="🐾 Jeder geschaffte Tag hinterlässt eine Pfote."
+          />
+        </li>
+        <li>
+          🃏 Alle 10 Tage gibt es einen Joker – er rettet einen verpassten Tag und wird zum{" "}
+          <MotifText flower="Glücksklee 🍀." clean="goldenen Blatt." dark="Mond 🌙." cat="Fischchen 🐟." />
+        </li>
         {types.map((t) => (
           <li key={t.type}>
             {REWARD_EMOJI[t.type] ?? "🎁"} <span className="font-bold">{t.title}</span> – alle {t.interval_days}{" "}

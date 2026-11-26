@@ -1,4 +1,6 @@
 import { REWARD_EMOJI } from "@/features/rewards/labels";
+import { MOTIFS, motifClass, type Motif } from "@/features/shell/motif";
+import { MotifText } from "@/features/shell/motif-text";
 import type { PathNode } from "./pathway";
 
 // Blütenfarben: Rosa-Töne mit Lavendel und Pfirsich als Abwechslung.
@@ -19,9 +21,15 @@ function seeded(n: number, salt: number): number {
 export function Meadow({ nodes, hiddenPast }: { nodes: PathNode[]; hiddenPast: number }) {
   return (
     <div className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-surface via-surface to-mint-soft px-3 pt-4 pb-10">
+      <Twinkles />
       {hiddenPast > 0 && (
         <p className="mb-2 text-center text-xs font-bold text-muted">
-          🌸 … und {hiddenPast} {hiddenPast === 1 ? "Blume" : "Blumen"} weiter vorne auf der Wiese
+          <MotifText
+            flower={`🌸 … und ${hiddenPast} ${hiddenPast === 1 ? "Blume" : "Blumen"} weiter vorne auf der Wiese`}
+            clean={`🍃 … und ${hiddenPast} ${hiddenPast === 1 ? "Blatt" : "Blätter"} weiter vorne am Pfad`}
+            dark={`⭐ … und ${hiddenPast} ${hiddenPast === 1 ? "Stern" : "Sterne"} weiter vorne am Himmel`}
+            cat={`🐾 … und ${hiddenPast} ${hiddenPast === 1 ? "Pfote" : "Pfoten"} weiter vorne auf dem Weg`}
+          />
         </p>
       )}
       <ol className="relative grid grid-cols-5 gap-x-1 gap-y-3">
@@ -33,7 +41,9 @@ export function Meadow({ nodes, hiddenPast }: { nodes: PathNode[]; hiddenPast: n
           >
             <div className="relative flex h-16 w-full items-end justify-center">
               {node.milestones.length > 0 && <RewardSign milestones={node.milestones} reached={node.kind === "done"} />}
-              <Plant node={node} />
+              {MOTIFS.map((m) => (
+                <Plant key={m} node={node} motif={m} />
+              ))}
             </div>
             <span
               className={`mt-0.5 text-[0.65rem] font-extrabold ${
@@ -46,11 +56,25 @@ export function Meadow({ nodes, hiddenPast }: { nodes: PathNode[]; hiddenPast: n
         ))}
       </ol>
       <Grass />
+      <div className="motif-clean absolute inset-x-6 bottom-6 h-0.5 rounded-full bg-border" aria-hidden />
+      <div className="motif-cat absolute inset-x-6 bottom-6 h-0.5 rounded-full bg-border" aria-hidden />
     </div>
   );
 }
 
-function Plant({ node }: { node: PathNode }) {
+/** Eine Station des Pfads im Motiv des Designs (nur die passende Variante ist sichtbar). */
+function Plant({ node, motif }: { node: PathNode; motif: Motif }) {
+  return <div className={`${motifClass(motif)} flex items-end justify-center`}>{plantFor(node, motif)}</div>;
+}
+
+function plantFor(node: PathNode, motif: Motif) {
+  if (motif === "clean") return <LeafStation node={node} />;
+  if (motif === "dark") return <StarStation node={node} />;
+  if (motif === "cat") return <PawStation node={node} />;
+  return <FlowerStation node={node} />;
+}
+
+function FlowerStation({ node }: { node: PathNode }) {
   if (node.kind === "done") {
     return <Flower day={node.streakDay} big={node.milestones.length > 0 || node.isToday} />;
   }
@@ -143,7 +167,7 @@ function Grass() {
     <svg
       viewBox="0 0 400 40"
       preserveAspectRatio="none"
-      className="absolute inset-x-0 bottom-0 h-8 w-full"
+      className="motif-flower absolute inset-x-0 bottom-0 h-8 w-full"
       aria-hidden
     >
       <path
@@ -151,6 +175,145 @@ function Grass() {
         fill="#8fd6ad"
         opacity=".55"
       />
+    </svg>
+  );
+}
+
+/* ---------- Clean Light: Blätter am Pfad ---------- */
+
+const LEAVES = ["#8fa088", "#a8b59f", "#6f8268", "#b8c4b0", "#c9c0b3"];
+
+function LeafStation({ node }: { node: PathNode }) {
+  const tilt = Math.round((seeded(node.streakDay, 6) - 0.5) * 50);
+  if (node.kind === "done") {
+    const big = node.milestones.length > 0 || node.isToday;
+    const color = LEAVES[Math.floor(seeded(node.streakDay, 2) * LEAVES.length)];
+    return <Leaf color={color} tilt={tilt} className={big ? "h-14 w-12" : "h-11 w-9"} />;
+  }
+  if (node.kind === "joker") return <Leaf color="#c9a24a" tilt={tilt} className="h-12 w-10" />;
+  if (node.kind === "today") {
+    return (
+      <div className="relative flex items-end justify-center">
+        <span className="absolute bottom-2 size-11 animate-ping rounded-full bg-accent/15" aria-hidden />
+        <Leaf color="none" stroke="#3f3a35" tilt={0} className="relative h-12 w-10 animate-float" />
+      </div>
+    );
+  }
+  return <Leaf color="none" stroke="#c4b8a8" tilt={tilt} className="h-8 w-7 opacity-70" />;
+}
+
+function Leaf({ color, stroke, tilt, className }: { color: string; stroke?: string; tilt: number; className: string }) {
+  return (
+    <svg viewBox="-20 -24 40 48" className={className} aria-hidden>
+      <g transform={`rotate(${tilt})`}>
+        <path d="M0 -20 C14 -10 14 10 0 20 C-14 10 -14 -10 0 -20Z" fill={color} stroke={stroke} strokeWidth={stroke ? 2 : 0} />
+        <path d="M0 -17 L0 20" stroke={stroke ?? "#fff"} strokeOpacity={stroke ? 0.6 : 0.6} strokeWidth="1.5" />
+      </g>
+    </svg>
+  );
+}
+
+/* ---------- Dark: Sterne am Himmel ---------- */
+
+function StarStation({ node }: { node: PathNode }) {
+  if (node.kind === "done") {
+    const big = node.milestones.length > 0 || node.isToday;
+    return <Star color={big ? "#ffc867" : seeded(node.streakDay, 2) > 0.5 ? "#ff8fb3" : "#ffb3cd"} className={big ? "size-12" : "size-9"} />;
+  }
+  if (node.kind === "joker") {
+    return (
+      <svg viewBox="-20 -20 40 40" className="size-10" aria-hidden>
+        <path d="M6 -16 A16 16 0 1 0 14 10 A13 13 0 1 1 6 -16Z" fill="#ffc867" />
+      </svg>
+    );
+  }
+  if (node.kind === "today") {
+    return (
+      <div className="relative flex items-end justify-center">
+        <span className="absolute size-11 animate-ping rounded-full bg-accent/20" aria-hidden />
+        <Star color="none" stroke="#ff8fb3" className="relative size-10 animate-float" />
+      </div>
+    );
+  }
+  return <Star color="#5a4a63" className="size-5 opacity-80" />;
+}
+
+function Star({ color, stroke, className }: { color: string; stroke?: string; className: string }) {
+  return (
+    <svg viewBox="-20 -20 40 40" className={className} aria-hidden>
+      <path
+        d="M0 -17 L5 -6 L17 -5 L8 3 L10.5 15 L0 9 L-10.5 15 L-8 3 L-17 -5 L-5 -6Z"
+        fill={color}
+        stroke={stroke}
+        strokeWidth={stroke ? 2.4 : 0}
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/** Ein paar ferne Sterne im Hintergrund (nur Dark). */
+function Twinkles() {
+  return (
+    <svg className="motif-dark pointer-events-none absolute inset-0 h-full w-full" aria-hidden>
+      {[
+        [8, 12], [22, 70], [37, 30], [55, 82], [68, 18], [83, 55], [94, 28], [47, 55],
+      ].map(([x, y], i) => (
+        <circle key={i} cx={`${x}%`} cy={`${y}%`} r={i % 3 ? 1.2 : 1.8} fill="#f2eef3" opacity={0.35} />
+      ))}
+    </svg>
+  );
+}
+
+/* ---------- Cozy Cat: Pfotenpfad mit Wollknäueln ---------- */
+
+const PAWS = ["#b67d4e", "#8b5a3c", "#c98b5a", "#a0522d"];
+
+function PawStation({ node }: { node: PathNode }) {
+  const tilt = Math.round((seeded(node.streakDay, 6) - 0.5) * 40);
+  if (node.kind === "done") {
+    if (node.milestones.length > 0 || node.isToday) return <Yarn color={PAWS[node.streakDay % PAWS.length]} />;
+    return <Paw color={PAWS[Math.floor(seeded(node.streakDay, 2) * PAWS.length)]} tilt={tilt} className="size-9" />;
+  }
+  if (node.kind === "joker") {
+    return (
+      <svg viewBox="-22 -14 44 28" className="h-8 w-12" aria-hidden>
+        <path d="M-16 0 C-8 -12 10 -12 14 0 C10 12 -8 12 -16 0Z M14 0 L22 -8 L22 8Z" fill="#7aa0b8" />
+        <circle cx="-6" cy="-2" r="2" fill="#2b3a45" />
+      </svg>
+    );
+  }
+  if (node.kind === "today") {
+    return (
+      <div className="relative flex items-end justify-center">
+        <span className="absolute bottom-1 size-11 animate-ping rounded-full bg-accent/15" aria-hidden />
+        <Paw color="none" stroke="#8b5a3c" tilt={0} className="relative size-10 animate-float" />
+      </div>
+    );
+  }
+  return <Paw color="#e9cba8" tilt={tilt} className="size-7 opacity-70" />;
+}
+
+function Paw({ color, stroke, tilt, className }: { color: string; stroke?: string; tilt: number; className: string }) {
+  return (
+    <svg viewBox="0 0 40 40" className={className} aria-hidden>
+      <g transform={`rotate(${tilt} 20 20)`} fill={color} stroke={stroke} strokeWidth={stroke ? 2 : 0}>
+        <ellipse cx="20" cy="27" rx="9" ry="8" />
+        <ellipse cx="9" cy="16" rx="4" ry="5" />
+        <ellipse cx="16" cy="9" rx="4" ry="5" />
+        <ellipse cx="24" cy="9" rx="4" ry="5" />
+        <ellipse cx="31" cy="16" rx="4" ry="5" />
+      </g>
+    </svg>
+  );
+}
+
+function Yarn({ color }: { color: string }) {
+  return (
+    <svg viewBox="0 0 44 44" className="size-12" aria-hidden>
+      <circle cx="20" cy="22" r="16" fill={color} />
+      <path d="M7 16 Q20 25 34 13 M6 24 Q20 33 35 21 M11 34 Q22 28 31 34 M14 8 Q12 22 18 37" stroke="#fff" strokeOpacity=".5" strokeWidth="2" fill="none" />
+      <path d="M35 28 q7 4 5 12" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" />
     </svg>
   );
 }

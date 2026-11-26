@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { currentMotif, type Motif } from "@/features/shell/motif";
 import { nextCompliment } from "./actions";
 import { FALLBACK_COMPLIMENT } from "./compliments";
 import { needsMotionPermission, requestMotion, storedMotion } from "./motion";
@@ -11,7 +12,14 @@ type Petal = { id: number; left: number; delay: number; duration: number; size: 
 
 const RAIN_MS = 3200;
 const CARD_MS = 6000;
-const COLORS = ["#ffb0cb", "#f78cb2", "#ffd1e1", "#e45b91"];
+// Farben und Symbol je Design: Blüten · Blätter & Papier · Sternschnuppen · Pfoten & Wolle.
+const COLORS: Record<Motif, string[]> = {
+  flower: ["#ffb0cb", "#f78cb2", "#ffd1e1", "#e45b91"],
+  clean: ["#8fa088", "#b8c4b0", "#c9c0b3", "#6f8268"],
+  dark: ["#ff8fb3", "#ffc867", "#ffb3cd", "#fff3c4"],
+  cat: ["#c98b5a", "#8b5a3c", "#e9cba8", "#a0522d"],
+};
+const CARD_ICON: Record<Motif, string> = { flower: "🌸", clean: "🍃", dark: "🌙", cat: "🐾" };
 
 function typing(): boolean {
   const el = document.activeElement as HTMLElement | null;
@@ -38,6 +46,7 @@ export function BlossomRain() {
   const stateRef = useRef(initialShakeState());
   const busyRef = useRef(false);
   const [petals, setPetals] = useState<Petal[] | null>(null);
+  const [motif, setMotif] = useState<Motif>("flower");
   const [text, setText] = useState<string | null>(null);
   const [cardOpen, setCardOpen] = useState(false);
 
@@ -48,6 +57,7 @@ export function BlossomRain() {
   const trigger = useCallback(() => {
     busyRef.current = true;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setMotif(currentMotif());
     if (!reduced) setPetals(makePetals());
     setText(null);
     setCardOpen(true);
@@ -104,7 +114,7 @@ export function BlossomRain() {
           }
           aria-hidden
         >
-          <PetalShape kind={p.kind} color={COLORS[p.id % COLORS.length]} />
+          <PetalShape motif={motif} kind={p.kind} color={COLORS[motif][p.id % COLORS[motif].length]} />
         </span>
       ))}
       {cardOpen && (
@@ -115,7 +125,7 @@ export function BlossomRain() {
             className="pointer-events-auto w-full max-w-xs animate-pop rounded-3xl border border-border bg-surface px-6 py-7 text-center shadow-soft"
           >
             <span className="text-4xl" aria-hidden>
-              🌸
+              {CARD_ICON[motif]}
             </span>
             <p lang="en" className="mt-3 text-xl leading-snug font-extrabold text-accent-ink">
               {text ?? "…"}
@@ -127,7 +137,43 @@ export function BlossomRain() {
   );
 }
 
-function PetalShape({ kind, color }: { kind: number; color: string }) {
+function PetalShape({ motif, kind, color }: { motif: Motif; kind: number; color: string }) {
+  if (motif === "clean") {
+    if (kind === 2) return <svg viewBox="0 0 40 40" className="size-full"><rect x="12" y="8" width="16" height="24" rx="2" fill="#fff" stroke="#c9c0b3" strokeWidth="1.5" transform="rotate(15 20 20)" /></svg>;
+    return (
+      <svg viewBox="0 0 40 40" className="size-full">
+        <path d="M20 3 C33 12 33 28 20 37 C7 28 7 12 20 3Z" fill={color} />
+        <path d="M20 5 L20 36" stroke="#fff" strokeOpacity=".6" strokeWidth="1.5" />
+      </svg>
+    );
+  }
+  if (motif === "dark") {
+    return (
+      <svg viewBox="0 0 40 40" className="size-full">
+        {kind === 0 && <path d="M20 20 L36 4" stroke={color} strokeOpacity=".5" strokeWidth="2" strokeLinecap="round" />}
+        <path d="M20 6 L23.5 15.5 L33.5 16 L25.5 22 L28.5 32 L20 26 L11.5 32 L14.5 22 L6.5 16 L16.5 15.5Z" fill={color} />
+      </svg>
+    );
+  }
+  if (motif === "cat") {
+    if (kind === 0) {
+      return (
+        <svg viewBox="0 0 40 40" className="size-full">
+          <circle cx="20" cy="20" r="14" fill={color} />
+          <path d="M9 15 Q20 22 31 12 M8 22 Q20 29 32 19" stroke="#fff" strokeOpacity=".5" strokeWidth="2" fill="none" />
+        </svg>
+      );
+    }
+    return (
+      <svg viewBox="0 0 40 40" className="size-full" fill={color}>
+        <ellipse cx="20" cy="27" rx="9" ry="8" />
+        <ellipse cx="9" cy="16" rx="4" ry="5" />
+        <ellipse cx="16" cy="9" rx="4" ry="5" />
+        <ellipse cx="24" cy="9" rx="4" ry="5" />
+        <ellipse cx="31" cy="16" rx="4" ry="5" />
+      </svg>
+    );
+  }
   if (kind === 0) {
     // Kleine Blüte mit fünf Blättern
     return (

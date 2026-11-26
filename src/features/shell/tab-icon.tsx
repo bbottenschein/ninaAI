@@ -9,7 +9,24 @@ const PATHS: Record<Tab["icon"], string> = {
   admin: "M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z",
 };
 
+// Cozy Cat: Pfote statt Sprössling.
+const PAW = "M12 20c-3 0-5-1.6-5-3.6 0-2.4 2.4-4.4 5-4.4s5 2 5 4.4c0 2-2 3.6-5 3.6zM5.5 11.5a1.8 2.2 0 1 0 0 .1zM9 7.5a1.8 2.2 0 1 0 0 .1zM15 7.5a1.8 2.2 0 1 0 0 .1zM18.5 11.5a1.8 2.2 0 1 0 0 .1z";
+
 export function TabIcon({ icon }: { icon: Tab["icon"] }) {
+  if (icon === "learn") {
+    return (
+      <>
+        <Icon path={PATHS.learn} className="motif-flower" />
+        <Icon path={PATHS.learn} className="motif-clean" />
+        <Icon path={PATHS.learn} className="motif-dark" />
+        <Icon path={PAW} className="motif-cat" />
+      </>
+    );
+  }
+  return <Icon path={PATHS[icon]} />;
+}
+
+function Icon({ path, className = "" }: { path: string; className?: string }) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -18,10 +35,10 @@ export function TabIcon({ icon }: { icon: Tab["icon"] }) {
       strokeWidth={1.8}
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="size-6"
+      className={`size-6 ${className}`}
       aria-hidden
     >
-      <path d={PATHS[icon]} />
+      <path d={path} />
     </svg>
   );
 }

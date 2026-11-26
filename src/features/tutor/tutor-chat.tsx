@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, useSyncExternalStore, useTransition } from "react";
 import type { TutorQuestion } from "@/features/lesson/schema";
-import { Mouse } from "@/features/shell/mouse";
+import { Mascot } from "@/features/shell/mascot";
 import { tutorTurn } from "./actions";
 import { MAX_RECORDING_SECONDS, VOICE_LIMIT_SECONDS, openingMessage, type ChatMessage } from "./logic";
 import type { TutorFeedback } from "./prompts";
@@ -188,7 +188,7 @@ export function TutorChat({
       <>
         {header}
         <div className="card animate-pop text-center">
-          <Mouse className="mx-auto size-24 animate-float" />
+          <Mascot className="mx-auto size-24 animate-float" />
           <p className="mt-3 text-lg font-extrabold">Bereit für ein kleines Gespräch?</p>
           <p className="mt-1 text-sm text-muted">
             Der Tutor stellt dir {questions.length} Fragen zu den News – auf Englisch, ganz entspannt.
@@ -212,7 +212,7 @@ export function TutorChat({
 
       {pending && (
         <div className="mt-3 flex items-center gap-2 text-sm text-muted" role="status">
-          <Mouse mood="sleepy" className="size-8 animate-wiggle" /> Der Tutor denkt nach …
+          <Mascot mood="sleepy" className="size-8 animate-wiggle" /> Der Tutor denkt nach …
         </div>
       )}
 
@@ -300,7 +300,7 @@ function Transcript({
       {messages.map((m, i) =>
         m.role === "tutor" ? (
           <li key={i} className="flex animate-pop items-end gap-2">
-            <Mouse className="size-9 shrink-0" />
+            <Mascot className="size-9 shrink-0" />
             <button
               type="button"
               lang="en"
@@ -330,7 +330,7 @@ function FeedbackCard({ feedback }: { feedback: TutorFeedback }) {
   return (
     <section className="card mt-6 animate-pop">
       <div className="flex items-center gap-3">
-        <Mouse mood="party" className="size-14 shrink-0" />
+        <Mascot mood="party" className="size-14 shrink-0" />
         <h2 className="text-xl font-extrabold">Dein Feedback</h2>
       </div>
 
