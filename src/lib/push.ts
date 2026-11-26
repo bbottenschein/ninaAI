@@ -5,6 +5,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 export type PushPayload = { title: string; body: string; url?: string; tag?: string };
 
+/** Push-Arten, die man in den Einstellungen einzeln abschalten kann (Spalten in user_settings). */
+export type PushKind = "love_notes" | "learning" | "reminders" | "rewards";
+
 let configured = false;
 function setup(): boolean {
   const config = vapidConfig();
@@ -20,7 +23,8 @@ function setup(): boolean {
  * Schickt einen Push an alle Geräte der genannten Nutzer. Abgelaufene Geräte
  * (404/410) werden entfernt. Liefert die Anzahl erfolgreich zugestellter Pushes.
  */
-export async function sendPush(userIds: string[], payload: PushPayload): Promise<number> {
+export async function sendPush(userIds: string[], payload: PushPayload, kind?: PushKind): Promise<number> {
+  if (kind) userIds = await wantsPush(userIds, kind);
   if (userIds.length === 0) return 0;
   if (!setup()) {
     console.warn("[push] VAPID-Schlüssel fehlen – Push übersprungen:", payload.title);
@@ -54,6 +58,18 @@ export async function sendPush(userIds: string[], payload: PushPayload): Promise
     }),
   );
   return sent;
+}
+
+/** Nur die Nutzer, die diese Push-Art nicht ausgeschaltet haben (ohne Eintrag: an). */
+async function wantsPush(userIds: string[], kind: PushKind): Promise<string[]> {
+  if (userIds.length === 0) return [];
+  const column = `push_${kind}`;
+  const { data, error } = await createAdminClient().from("user_settings").select(`user_id, ${column}`).in("user_id", userIds);
+  if (error) throw error;
+  const off = new Set(
+    ((data ?? []) as unknown as Record<string, unknown>[]).filter((r) => r[column] === false).map((r) => r.user_id as string),
+  );
+  return userIds.filter((id) => !off.has(id));
 }
 
 /** Ids aller Admins (Benedikt). */

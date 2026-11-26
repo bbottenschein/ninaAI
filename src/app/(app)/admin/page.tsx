@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { berlinDate } from "@/lib/date";
-import { vapidConfig } from "@/lib/env.server";
-import { PushSettings } from "@/features/notifications/push-settings";
 import { requireAdmin } from "@/features/auth/session";
 import { AdminView } from "@/features/admin/admin-view";
 import { ComplimentAdmin } from "@/features/extras/compliment-admin";
@@ -22,11 +20,6 @@ export default async function AdminPage() {
     <>
       <AdminView streak={streak} rewards={rewards} types={types} />
       <ComplimentAdmin compliments={compliments} />
-      <PushSettings
-        publicKey={vapidConfig()?.publicKey ?? null}
-        title="Benachrichtigungen"
-        description="Wenn Nina einen Gutschein verdient oder einlöst und wenn sie dir eine Love Note schickt."
-      />
     </>
   );
 }

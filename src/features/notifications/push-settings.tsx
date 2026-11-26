@@ -38,10 +38,13 @@ export function PushSettings({
   publicKey,
   title,
   description,
+  compact = false,
 }: {
   publicKey: string | null;
   title: string;
   description: string;
+  /** Ohne Abstand nach oben (z. B. in den Einstellungen). */
+  compact?: boolean;
 }) {
   const [status, setStatus] = useState<Status>("loading");
   const [message, setMessage] = useState<string | null>(null);
@@ -104,7 +107,7 @@ export function PushSettings({
   }
 
   return (
-    <section className="card mt-6 flex flex-col gap-2">
+    <section className={`card flex flex-col gap-2 ${compact ? "mt-3" : "mt-6"}`}>
       <div className="flex items-center gap-3">
         <span className="text-2xl" aria-hidden>
           {status === "on" ? "🔔" : "🔕"}

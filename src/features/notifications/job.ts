@@ -38,7 +38,7 @@ export async function runReminder(today: string, now = new Date()): Promise<{ se
       quizDone: progress?.quiz_done ?? false,
       streak: streak?.current_streak ?? 0,
     });
-    sent += await sendPush([player.id], { ...text, url: "/learn", tag: "reminder" });
+    sent += await sendPush([player.id], { ...text, url: "/learn", tag: "reminder" }, "learning");
   }
   return { sent, skipped: sent === 0 ? `hour=${hour}` : "" };
 }

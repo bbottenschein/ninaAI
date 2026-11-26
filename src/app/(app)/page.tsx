@@ -1,6 +1,5 @@
 import { after } from "next/server";
 import { berlinDate } from "@/lib/date";
-import { vapidConfig } from "@/lib/env.server";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/features/auth/session";
 import { HomeHeader } from "@/features/home/home-view";
@@ -10,7 +9,6 @@ import { journalAccess } from "@/features/journal/lock";
 import { showHomeCard } from "@/features/journal/logic";
 import { loadEntries } from "@/features/journal/queries";
 import { ensureLesson } from "@/features/lesson/ensure";
-import { PushSettings } from "@/features/notifications/push-settings";
 import { MotionPermission } from "@/features/extras/motion-permission";
 import { hasUnreadLoveNote } from "@/features/extras/queries";
 import { isWeekend, type TodoList } from "@/features/remind/logic";
@@ -46,14 +44,6 @@ export default async function HomePage() {
       {isPlayer && showHomeCard(new Date(), Boolean(journalEntry)) && <JournalHomeCard entry={journalEntry} hideRating={Boolean(access?.pinSet)} />}
       {isPlayer && <MotionPermission variant="card" />}
       {isPlayer && <HomeTodos todos={todos} lists={lists} today={date} weekend={isWeekend(date)} />}
-      {isPlayer && (
-        <PushSettings
-          publicKey={vapidConfig()?.publicKey ?? null}
-          title="Benachrichtigungen"
-          description="Love Notes, deine Erinnerungen aus Remind me und um 19 Uhr die Lern-Erinnerung."
-        />
-      )}
-      {isPlayer && <MotionPermission variant="row" />}
     </>
   );
 }

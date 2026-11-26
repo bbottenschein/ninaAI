@@ -21,7 +21,7 @@ export async function redeemReward(id: string): Promise<{ error?: string }> {
       body: `${type?.title ?? reward.type} (Streak-Tag ${reward.milestone_day})`,
       url: "/admin",
       tag: "reward-redeemed",
-    });
+    }, "rewards");
   } catch (pushError) {
     console.error("[rewards] Benachrichtigung fehlgeschlagen", pushError);
   }

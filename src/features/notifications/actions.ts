@@ -36,8 +36,8 @@ export async function sendTestPush(): Promise<{ sent: number }> {
   const user = await getCurrentUser();
   const sent = await sendPush([user.id], {
     title: "Es klappt! 🐭",
-    body: user.role === "admin" ? "Du bekommst Bescheid, wenn Nina Gutscheine verdient oder einlöst." : "Ab jetzt erinnert dich die Maus um 19 Uhr.",
-    url: user.role === "admin" ? "/admin" : "/",
+    body: "Benachrichtigungen sind auf diesem Gerät eingeschaltet. Welche kommen, wählst du in den Einstellungen.",
+    url: "/einstellungen",
     tag: "test",
   });
   return { sent };

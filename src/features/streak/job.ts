@@ -79,7 +79,7 @@ async function notifyEarned(userId: string, rewards: { type: string; milestone_d
       body: `${list} – Streak-Tag ${rewards[0].milestone_day}`,
       url: "/admin",
       tag: "reward-earned",
-    });
+    }, "rewards");
   } catch (error) {
     console.error("[streak] Benachrichtigung fehlgeschlagen", error);
   }

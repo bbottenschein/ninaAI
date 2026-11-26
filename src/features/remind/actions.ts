@@ -225,14 +225,3 @@ export async function deleteList(id: string): Promise<Result> {
   refresh();
   return {};
 }
-
-/** Tagesüberblick um 07:30 ein- oder ausschalten (SPEC-remind-me › Benachrichtigungen). */
-export async function setDailyOverview(enabled: boolean): Promise<Result> {
-  const { user, supabase } = await player();
-  const { error } = await supabase
-    .from("user_settings")
-    .upsert({ user_id: user.id, daily_overview: enabled, updated_at: new Date().toISOString() }, { onConflict: "user_id" });
-  if (error) return { error: "Konnte nicht gespeichert werden." };
-  refresh();
-  return {};
-}
