@@ -177,7 +177,8 @@ Vier Phasen. Nach Phase 2 ist „Remind me“ im Alltag voll nutzbar.
 - [x] **Phase R1 – Grundgerüst:** neue Navigation (Home, Daily Learning mit Success-Unter-Tab, Remind me), Tabellen mit RLS, Bereiche Work Mode und Life Mode, Korrektur-Karte zum manuellen Anlegen und Bearbeiten, To-Do Overview mit Umschalter und Ansichten Heute / Geplant / Listen / Erledigt.
 - [x] **Phase R2 – Home & Erinnerungen:** Home mit Tagesstatus (Datum, Lektion, Streak, heute fällige To-dos), Erinnerungs-Job, Push mit „Erledigt“ und „Später“, Wiederholungen, Wochenend-Regel für den Work Mode.
 - [x] **Phase R3 – KI-Eingabe:** KI-Eingabefeld, das die Karte vorbefüllt, mit Bereichserkennung, Spracheingabe, Standardzeiten, mehreren Aufgaben pro Satz und Änderungen per KI (inkl. Button „Mit KI ändern“).
-- [ ] **Phase R4 – Extras:** Tagesüberblick um 07:30, gemeinsame Liste mit Benedikt.
+- [x] **Phase R4 – Extras:** Tagesüberblick um 07:30 (Schalter in Remind me, Tabelle `user_settings`).
+- [ ] **Später:** gemeinsame Liste mit Benedikt – erst nach Absprache mit Nina.
 
 ## Offene Punkte
 

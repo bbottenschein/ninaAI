@@ -60,6 +60,8 @@ npm run dev
   Lektion des Tages, falls sie noch fehlt.
 - `POST /api/jobs/todo-reminders` (jede Minute): verschickt fällige Erinnerungen aus
   „Remind me“ (mehrere in derselben Minute als ein Push; Work Mode am Wochenende → Montag 08:00).
+- `POST /api/jobs/daily-overview` (zur halben Stunde): Tagesüberblick um 07:30 für alle, die
+  ihn in Remind me eingeschaltet haben (höchstens einmal pro Tag, nur wenn etwas ansteht).
 - `POST /api/jobs/nightly` (5 nach): wertet alle abgeschlossenen, noch offenen Tage aus –
   Streak, Joker, Pathway (`streak_days`) und Gutscheine. Nach Mitternacht also den Vortag;
   fällt ein Lauf aus, holt der nächste die Tage nach. URL und Secret liegen im Supabase Vault –

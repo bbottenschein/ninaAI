@@ -1,7 +1,9 @@
 import "server-only";
-import { sendPush } from "@/lib/push";
+import { berlinParts } from "@/lib/date";
+import { claimNotification, sendPush } from "@/lib/push";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Area } from "./logic";
+import { isOverviewTime, overviewPush } from "./overview";
 import { planReminders, reminderPush, type DueReminder } from "./schedule";
 
 /**
@@ -57,4 +59,33 @@ export async function runTodoReminders(now = new Date()) {
   }
 
   return { due: due.length, sent, deferred: plan.defer.length, skipped: plan.skip.length };
+}
+
+/** Tagesüberblick um 07:30 für alle, die ihn eingeschaltet haben – höchstens einmal pro Tag. */
+export async function runDailyOverview(now = new Date()) {
+  if (!isOverviewTime(now)) return { sent: 0, skipped: "not-overview-time" };
+  const admin = createAdminClient();
+  const today = berlinParts(now).date;
+
+  const { data: settings, error } = await admin.from("user_settings").select("user_id").eq("daily_overview", true);
+  if (error) throw error;
+
+  let sent = 0;
+  for (const { user_id } of settings ?? []) {
+    const { data: rows } = await admin
+      .from("todos")
+      .select("due_date, todo_lists!inner(area)")
+      .eq("owner_id", user_id)
+      .is("completed_at", null)
+      .lte("due_date", today);
+    const todos = (rows ?? []).map((r) => ({
+      due_date: r.due_date as string | null,
+      area: ((r.todo_lists as unknown as { area: Area }).area ?? "life") as Area,
+    }));
+    const push = overviewPush(todos, today);
+    if (!push) continue;
+    if (!(await claimNotification(user_id, "daily_overview", today))) continue;
+    sent += await sendPush([user_id], { ...push, url: "/remind", tag: "daily-overview" });
+  }
+  return { sent };
 }
