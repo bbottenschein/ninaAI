@@ -19,3 +19,11 @@ export const anthropicApiKey = () => required("ANTHROPIC_API_KEY");
 
 /** Für die Spracherkennung im Tutor-Gespräch. Optional: fehlt er, wird getippt. */
 export const openaiApiKey = (): string | null => process.env.OPENAI_API_KEY || null;
+
+/** Web Push (VAPID). Optional: fehlen die Schlüssel, werden keine Pushes verschickt. */
+export function vapidConfig(): { publicKey: string; privateKey: string; subject: string } | null {
+  const publicKey = process.env.VAPID_PUBLIC_KEY;
+  const privateKey = process.env.VAPID_PRIVATE_KEY;
+  if (!publicKey || !privateKey) return null;
+  return { publicKey, privateKey, subject: process.env.VAPID_SUBJECT || "mailto:admin@example.com" };
+}

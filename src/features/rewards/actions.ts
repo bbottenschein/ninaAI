@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { adminIds, sendPush } from "@/lib/push";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser, requireAdmin } from "@/features/auth/session";
 
@@ -9,9 +10,21 @@ export async function redeemReward(id: string): Promise<{ error?: string }> {
   const user = await getCurrentUser();
   if (user.role !== "player") return { error: "Nur für die Spielerin" };
   const supabase = await createClient();
-  const { error } = await supabase.rpc("redeem_reward", { p_reward_id: id });
+  const { data: reward, error } = await supabase.rpc("redeem_reward", { p_reward_id: id });
   if (error) return { error: "Konnte nicht eingelöst werden." };
-  // Benachrichtigung an Benedikt folgt mit Web Push in Phase 6.
+
+  // Benedikt bekommt Bescheid – ein Fehler beim Push ändert nichts am Einlösen.
+  try {
+    const { data: type } = await supabase.from("reward_types").select("title").eq("type", reward.type).maybeSingle();
+    await sendPush(await adminIds(), {
+      title: `💌 ${user.name} löst einen Gutschein ein`,
+      body: `${type?.title ?? reward.type} (Streak-Tag ${reward.milestone_day})`,
+      url: "/admin",
+      tag: "reward-redeemed",
+    });
+  } catch (pushError) {
+    console.error("[rewards] Benachrichtigung fehlgeschlagen", pushError);
+  }
   revalidatePath("/gutscheine");
   revalidatePath("/admin");
   return {};

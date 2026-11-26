@@ -271,7 +271,7 @@ Sechs Phasen, jede endet mit einer nutzbaren Version. Nach Phase 3 kann sie die 
 - [x] **Phase 3 – Quiz & Tutor:** Quiz of the Day, Tutor-Gespräch per Stimme mit Text-Fallback, Abschluss-Feedback, Tagesfortschritt.
 - [x] **Phase 4 – Streak & Belohnungen:** Nacht-Job, Streak- und Joker-Logik, Pathway, Gutscheine mit Einlösen, Admin-Bereich.
 - [x] **Phase 5 – Vokabeln & Knowledge:** automatische Vokabelübernahme, Vokabel-Quiz, Knowledge Section mit Schnell-Anlage aus den News.
-- [ ] **Phase 6 – Feinschliff:** Push-Reminder, Benachrichtigungen für Benedikt, Animationen, App-Icon und Design.
+- [x] **Phase 6 – Feinschliff:** Push-Reminder, Benachrichtigungen für Benedikt, Animationen, App-Icon und Design.
 
 Die Streak-Logik (Phase 4) wird mit Unit-Tests abgesichert, z. B. für „Joker verbraucht“,
 „zweiter Fehltag“, „Meilenstein 150“ und „Reset und erneuter Meilenstein“.
