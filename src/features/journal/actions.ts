@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/features/auth/session";
+import { journalAccess } from "./lock";
 import { isEditable, validateEntry, type EntryInput } from "./logic";
 
 /**
@@ -12,6 +13,7 @@ import { isEditable, validateEntry, type EntryInput } from "./logic";
 export async function saveJournalEntry(date: string, input: EntryInput): Promise<{ error?: string }> {
   const user = await getCurrentUser();
   if (user.role !== "player") return { error: "Nur für Nina" };
+  if (!(await journalAccess(user.id)).unlocked) return { error: "Das Journal ist gesperrt." };
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !isEditable(date, new Date())) {
     return { error: "Dieser Tag kann nicht mehr bearbeitet werden." };
   }

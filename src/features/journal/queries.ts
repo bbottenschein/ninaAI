@@ -31,3 +31,12 @@ export async function loadFeedbackEnabled(userId: string): Promise<boolean> {
   const { data } = await supabase.from("user_settings").select("journal_feedback").eq("user_id", userId).maybeSingle();
   return data?.journal_feedback ?? true;
 }
+
+export type JournalReview = { month: string; summary_en: string; stats: { average: number | null; best: { date: string; rating: number } | null } };
+
+/** Monatsrückblicke, neueste zuerst. */
+export async function loadReviews(): Promise<JournalReview[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("journal_reviews").select("month, summary_en, stats").order("month", { ascending: false }).limit(24);
+  return (data ?? []) as JournalReview[];
+}

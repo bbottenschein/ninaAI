@@ -5,6 +5,7 @@ import { askStructured } from "@/lib/claude";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/features/auth/session";
 import { FeedbackSchema, normalizeFeedback, type JournalFeedback } from "./feedback";
+import { journalAccess } from "./lock";
 
 const SYSTEM = `You give short, warm feedback on the ENGLISH of a German adult (level B1) who writes a private evening journal in English.
 
@@ -24,6 +25,7 @@ type Result = { feedback?: JournalFeedback; error?: string; disabled?: boolean }
 export async function generateJournalFeedback(date: string): Promise<Result> {
   const user = await getCurrentUser();
   if (user.role !== "player") return { error: "Nur für Nina" };
+  if (!(await journalAccess(user.id)).unlocked) return { error: "Das Journal ist gesperrt." };
   const supabase = await createClient();
 
   const [{ data: settings }, { data: entry }] = await Promise.all([

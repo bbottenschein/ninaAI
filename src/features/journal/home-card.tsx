@@ -4,9 +4,25 @@ import { RatingFlower } from "./rating-flower";
 
 /**
  * Ruhige Journal-Karte auf Home (SPEC-journal › Navigation): ab 18:00 eine Einladung
- * ohne Status oder Zähler, nach dem Eintrag die Bewertung des Tages.
+ * ohne Status oder Zähler, nach dem Eintrag die Bewertung des Tages (mit PIN ohne Bewertung).
  */
-export function JournalHomeCard({ entry }: { entry: JournalEntry | null }) {
+export function JournalHomeCard({ entry, hideRating = false }: { entry: JournalEntry | null; hideRating?: boolean }) {
+  // Mit PIN verrät Home nichts über den Tag – nur, dass der Eintrag da ist.
+  if (entry && hideRating) {
+    return (
+      <Link href="/journal" className="card mb-6 flex items-center gap-3 transition active:scale-[0.99]">
+        <span className="text-3xl" aria-hidden>
+          🔒
+        </span>
+        <p lang="en" className="min-w-0 flex-1 font-bold">
+          Journal · written today 🌸
+        </p>
+        <span className="text-muted" aria-hidden>
+          ›
+        </span>
+      </Link>
+    );
+  }
   if (entry) {
     return (
       <Link href="/journal" className="card mb-6 flex items-center gap-3 transition active:scale-[0.99]">

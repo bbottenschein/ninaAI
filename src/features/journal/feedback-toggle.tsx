@@ -8,7 +8,7 @@ export function FeedbackToggle({ initial }: { initial: boolean }) {
   const [on, setOn] = useState(initial);
   const [pending, startTransition] = useTransition();
   return (
-    <div className="mt-6 flex items-center gap-3 px-1 text-sm">
+    <div className="flex items-center gap-3 text-sm">
       <p className="min-w-0 flex-1 text-muted">Englisch-Feedback nach dem Speichern</p>
       <button
         type="button"

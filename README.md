@@ -62,6 +62,8 @@ npm run dev
   „Remind me“ (mehrere in derselben Minute als ein Push; Work Mode am Wochenende → Montag 08:00).
 - `POST /api/jobs/daily-overview` (zur halben Stunde): Tagesüberblick um 07:30 für alle, die
   ihn in Remind me eingeschaltet haben (höchstens einmal pro Tag, nur wenn etwas ansteht).
+- `POST /api/jobs/journal-review` (um :50): Monatsrückblick fürs Journal ab dem Monatsersten
+  07:00, einmal pro Monat und nur bei Einträgen im Vormonat. Kein Push.
 - `POST /api/jobs/nightly` (5 nach): wertet alle abgeschlossenen, noch offenen Tage aus –
   Streak, Joker, Pathway (`streak_days`) und Gutscheine. Nach Mitternacht also den Vortag;
   fällt ein Lauf aus, holt der nächste die Tage nach. URL und Secret liegen im Supabase Vault –
