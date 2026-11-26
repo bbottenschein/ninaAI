@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { Mouse } from "@/features/shell/mouse";
+import { Mascot } from "@/features/shell/mascot";
 import { markCorrections, type EntryTexts, type FieldKey, type JournalFeedback } from "./feedback";
 import { addJournalVocab, generateJournalFeedback } from "./feedback-actions";
 import { QUESTIONS } from "./logic";
@@ -29,7 +29,7 @@ export function FeedbackLoader({ date, texts }: { date: string; texts: EntryText
   if (state.kind === "loading") {
     return (
       <div className="card mt-4 flex items-center gap-3" role="status">
-        <Mouse mood="sleepy" className="size-10 shrink-0 animate-wiggle" />
+        <Mascot mood="sleepy" className="size-10 shrink-0 animate-wiggle" />
         <p className="text-sm text-muted">Die Maus liest dein Englisch …</p>
       </div>
     );

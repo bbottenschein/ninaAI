@@ -50,7 +50,11 @@ Jede Person sieht nur ihre eigenen Einstellungen.
 - [x] **Phase S2 – Design-System:** Flower, Clean Light, Dark, Automatisch, Umschalter.
   **[Umsetzung]** Die Farben von Cozy Cat sind schon in S2 dabei; Maskottchen und Motive folgen in S3.
   Vorher wechselte die App automatisch mit dem Handy in dunkle Farben – das macht jetzt nur noch „Automatisch“.
-- [ ] **Phase S3 – Motive:** Cozy Cat sowie die Motive für Clean Light und Dark.
+- [x] **Phase S3 – Motive:** Cozy Cat sowie die Motive für Clean Light und Dark.
+  **[Umsetzung]** Jede Motiv-Komponente rendert alle Varianten; CSS-Klassen `motif-flower|clean|dark|cat`
+  zeigen nur die passende (auch bei „Automatisch“ ohne JavaScript). `Mascot` (Maus/Kranich/Eule/Katze),
+  `RatingFlower` (Blume/Zweig/Mond/Katze), `Meadow` (Wiese/Blätter/Sterne/Pfoten, Joker: Klee/goldenes
+  Blatt/Mond/Fischchen), Schüttel-Regen, Learn-Tab-Icon (Pfote bei Cozy Cat) und Texte über `MotifText`.
 
 ## Offene Punkte
 

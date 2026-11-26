@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { addDays } from "@/lib/date";
-import { Mouse } from "@/features/shell/mouse";
+import { Mascot } from "@/features/shell/mascot";
 import type { JournalEntry } from "./logic";
 import { average, bestDay, inRange, monthGrid, monthRange, ratingTone, weekDates, yearAverages } from "./stats";
 
@@ -81,7 +81,7 @@ export function MoodOverview({
 
       {entries.length === 0 && view !== "gratitude" ? (
         <div className="card flex flex-col items-center gap-2 py-8 text-center text-muted">
-          <Mouse mood="sleepy" className="size-16" />
+          <Mascot mood="sleepy" className="size-16" />
           <p>Hier wächst bald dein Stimmungsverlauf.</p>
         </div>
       ) : (

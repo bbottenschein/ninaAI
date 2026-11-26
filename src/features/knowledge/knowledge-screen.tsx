@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { Mouse } from "@/features/shell/mouse";
+import { Mascot } from "@/features/shell/mascot";
 import { PageHeader } from "@/features/shell/page-header";
 import { deleteNugget } from "./actions";
 import { NuggetForm } from "./nugget-form";
@@ -28,7 +28,7 @@ export function KnowledgeScreen({ nuggets }: { nuggets: Nugget[] }) {
   return (
     <>
       <PageHeader
-        icon={<Mouse className="size-14 shrink-0" />}
+        icon={<Mascot className="size-14 shrink-0" />}
         title="Knowledge"
         subtitle={`${nuggets.length} ${nuggets.length === 1 ? "Nugget" : "Nuggets"}`}
         action={

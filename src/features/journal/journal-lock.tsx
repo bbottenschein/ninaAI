@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { Mouse } from "@/features/shell/mouse";
+import { Mascot } from "@/features/shell/mascot";
 import { PageHeader } from "@/features/shell/page-header";
 import { PinPad } from "./pin-pad";
 import { unlockJournal } from "./settings-actions";
@@ -14,7 +14,7 @@ export function JournalLock() {
   const [pending, startTransition] = useTransition();
   return (
     <>
-      <PageHeader icon={<Mouse mood="sleepy" className="size-14 shrink-0" />} title="Journal" subtitle="Gesperrt 🔒" />
+      <PageHeader icon={<Mascot mood="sleepy" className="size-14 shrink-0" />} title="Journal" subtitle="Gesperrt 🔒" />
       <div className="card flex flex-col items-center gap-5 py-8">
         <p className="text-center font-bold">Gib deine PIN ein</p>
         <PinPad

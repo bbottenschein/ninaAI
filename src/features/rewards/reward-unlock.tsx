@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Mouse } from "@/features/shell/mouse";
+import { Mascot } from "@/features/shell/mascot";
 import { markRewardsSeen } from "./actions";
 import { REWARD_EMOJI } from "./labels";
 
@@ -34,7 +34,7 @@ export function RewardUnlock({ rewards }: { rewards: Unlocked[] }) {
       aria-label="Neuer Gutschein"
     >
       <Confetti />
-      <Mouse mood="party" className="relative size-32 animate-float" />
+      <Mascot mood="party" className="relative size-32 animate-float" />
       <p className="relative mt-4 text-lg font-extrabold">Tag {reward.milestone_day} geschafft!</p>
       <p className="relative text-sm font-semibold opacity-90">Du hast einen Gutschein verdient</p>
 

@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
-import { Mouse } from "@/features/shell/mouse";
+import { Mascot } from "@/features/shell/mascot";
 import { PageHeader } from "@/features/shell/page-header";
 import { clearCompleted, createList, deleteList, renameList, setTodoDone } from "./actions";
 import { saveAreaFilter } from "./area-cookie";
@@ -85,7 +85,7 @@ export function RemindScreen({
 
   return (
     <>
-      <PageHeader icon={<Mouse className="size-14 shrink-0" />} title="Remind me" />
+      <PageHeader icon={<Mascot className="size-14 shrink-0" />} title="Remind me" />
 
       {/* Bereich */}
       <div role="group" aria-label="Bereich" className="mb-5 grid grid-cols-3 gap-1 rounded-full border-2 border-border bg-surface p-1">
@@ -200,7 +200,7 @@ function Group({ title, tone, children }: { title: string; tone?: "danger"; chil
 function Empty({ text }: { text: string }) {
   return (
     <div className="card flex flex-col items-center gap-2 py-8 text-center text-muted">
-      <Mouse mood="sleepy" className="size-16" />
+      <Mascot mood="sleepy" className="size-16" />
       <p>{text}</p>
     </div>
   );

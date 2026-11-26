@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState, useTransition, type ReactNode } from "react";
 import type { LessonNews } from "@/features/lesson/schema";
 import { markNewsRead } from "./actions";
-import { Mouse } from "@/features/shell/mouse";
+import { Mascot } from "@/features/shell/mascot";
 import { annotate, sentenceAt, tokenize, type Mark, type MarkKind } from "./annotate";
 import { NuggetForm } from "@/features/knowledge/nugget-form";
 import { addVocabFromNews } from "@/features/vocab/actions";
@@ -114,7 +114,7 @@ export function NewsReader({
 
       {allRead && (
         <div className="card mt-6 animate-pop bg-accent-soft text-center">
-          <Mouse mood="party" className="mx-auto size-20" />
+          <Mascot mood="party" className="mx-auto size-20" />
           <p className="mt-2 text-lg font-extrabold">Alle 3 Meldungen gelesen!</p>
           <p className="mt-1 text-sm text-muted">Als Nächstes kommt das Quiz of the Day.</p>
           <Link href={readOnly ? "/learn" : "/quiz"} className="btn-primary mt-4 inline-block">

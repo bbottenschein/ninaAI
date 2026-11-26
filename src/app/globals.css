@@ -172,6 +172,32 @@
   }
 }
 
+/* Motive (SPEC-settings › Design): Jede Motiv-Komponente rendert eine Variante pro Design,
+   sichtbar ist nur die passende. revert-layer lässt Tailwind-Klassen wie `block` weiter wirken. */
+.motif-clean,
+.motif-dark,
+.motif-cat {
+  display: none;
+}
+[data-theme="clean"] .motif-flower,
+[data-theme="dark"] .motif-flower,
+[data-theme="cat"] .motif-flower {
+  display: none;
+}
+[data-theme="clean"] .motif-clean,
+[data-theme="dark"] .motif-dark,
+[data-theme="cat"] .motif-cat {
+  display: revert-layer;
+}
+@media (prefers-color-scheme: dark) {
+  [data-theme="auto"] .motif-flower {
+    display: none;
+  }
+  [data-theme="auto"] .motif-dark {
+    display: revert-layer;
+  }
+}
+
 /* Formularelemente und Scrollbalken passend hell/dunkel. */
 :root { color-scheme: light; }
 :root[data-theme="dark"] { color-scheme: dark; }
