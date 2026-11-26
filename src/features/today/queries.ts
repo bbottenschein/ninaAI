@@ -1,12 +1,14 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { lessonPhase, type LessonPhase, type LessonRow } from "@/features/lesson/status";
+import { loadStreakView } from "@/features/streak/queries";
 import type { ProgressFlags } from "./steps";
 
 export type TodayData = {
   lessonPhase: LessonPhase;
   progress: ProgressFlags;
-  streak: { current: number; longest: number; jokers: number } | null;
+  streak: { current: number; longest: number; jokers: number; daysToJoker: number } | null;
+  jokerNotice: string | null;
   playerName: string | null;
 };
 
@@ -20,56 +22,42 @@ export async function loadToday(
 ): Promise<TodayData> {
   const supabase = await createClient();
 
-  let playerId: string | null = viewer.id;
-  let playerName: string | null = null;
-  if (viewer.role === "admin") {
-    const { data: player } = await supabase
-      .from("profiles")
-      .select("id, name")
-      .eq("role", "player")
-      .limit(1)
-      .maybeSingle();
-    playerId = player?.id ?? null;
-    playerName = player?.name ?? null;
-  }
-
-  const [lesson, progress, streak] = await Promise.all([
+  const [lesson, streak] = await Promise.all([
     supabase
       .from("daily_lessons")
       .select("status, attempts, generation_started_at")
       .eq("date", date)
       .maybeSingle(),
-    playerId
-      ? supabase
-          .from("lesson_progress")
-          .select("news_read, quiz_done, tutor_done")
-          .eq("user_id", playerId)
-          .eq("date", date)
-          .maybeSingle()
-      : Promise.resolve({ data: null }),
-    playerId
-      ? supabase
-          .from("streaks")
-          .select("current_streak, longest_streak, jokers_available")
-          .eq("user_id", playerId)
-          .maybeSingle()
-      : Promise.resolve({ data: null }),
+    loadStreakView(viewer, date),
   ]);
+
+  const playerId = streak?.playerId ?? (viewer.role === "player" ? viewer.id : null);
+  const { data: progress } = playerId
+    ? await supabase
+        .from("lesson_progress")
+        .select("news_read, quiz_done, tutor_done")
+        .eq("user_id", playerId)
+        .eq("date", date)
+        .maybeSingle()
+    : { data: null };
 
   return {
     lessonPhase: lessonPhase((lesson.data as LessonRow | null) ?? null),
     progress: {
-      newsRead: progress.data?.news_read?.length ?? 0,
-      quizDone: progress.data?.quiz_done ?? false,
-      tutorDone: progress.data?.tutor_done ?? false,
+      newsRead: progress?.news_read?.length ?? 0,
+      quizDone: progress?.quiz_done ?? false,
+      tutorDone: progress?.tutor_done ?? false,
     },
-    streak: streak.data
-      ? {
-          current: streak.data.current_streak,
-          longest: streak.data.longest_streak,
-          jokers: streak.data.jokers_available,
-        }
-      : null,
-    playerName,
+    streak:
+      streak
+        ? {
+            current: streak.state.current,
+            longest: streak.state.longest,
+            jokers: streak.state.jokers,
+            daysToJoker: streak.daysToJoker,
+          }
+        : null,
+    jokerNotice: viewer.role === "player" ? (streak?.jokerNotice ?? null) : null,
+    playerName: viewer.role === "admin" ? (streak?.playerName ?? null) : null,
   };
 }

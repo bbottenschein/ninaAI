@@ -269,7 +269,7 @@ Sechs Phasen, jede endet mit einer nutzbaren Version. Nach Phase 3 kann sie die 
 - [x] **Phase 1 – Grundgerüst:** Next.js-PWA, Supabase-Projekt, Login für 2 Konten, Tab-Navigation (Heute, Vokabeln, Knowledge, Gutscheine).
 - [x] **Phase 2 – News des Tages:** Morgen-Job, News-Ansicht mit EN/DE-Toggle, Begriffs-Erklärungen, Personen mit Amt.
 - [x] **Phase 3 – Quiz & Tutor:** Quiz of the Day, Tutor-Gespräch per Stimme mit Text-Fallback, Abschluss-Feedback, Tagesfortschritt.
-- [ ] **Phase 4 – Streak & Belohnungen:** Nacht-Job, Streak- und Joker-Logik, Pathway, Gutscheine mit Einlösen, Admin-Bereich.
+- [x] **Phase 4 – Streak & Belohnungen:** Nacht-Job, Streak- und Joker-Logik, Pathway, Gutscheine mit Einlösen, Admin-Bereich.
 - [ ] **Phase 5 – Vokabeln & Knowledge:** automatische Vokabelübernahme, Vokabel-Quiz, Knowledge Section mit Schnell-Anlage aus den News.
 - [ ] **Phase 6 – Feinschliff:** Push-Reminder, Benachrichtigungen für Benedikt, Animationen, App-Icon und Design.
 

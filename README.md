@@ -54,9 +54,13 @@ npm run dev
 
 ## Geplante Jobs
 
-`pg_cron` ruft stündlich `POST /api/jobs/morning` auf (Migration
-`20261125120000_lesson_generation.sql`). Die Route arbeitet ab 05:00 Uhr deutscher Zeit
-und nur, wenn die Lektion des Tages noch fehlt. URL und Secret liegen im Supabase Vault –
+`pg_cron` ruft stündlich zwei Routen auf:
+
+- `POST /api/jobs/morning` (zur vollen Stunde): erzeugt ab 05:00 Uhr deutscher Zeit die
+  Lektion des Tages, falls sie noch fehlt.
+- `POST /api/jobs/nightly` (5 nach): wertet alle abgeschlossenen, noch offenen Tage aus –
+  Streak, Joker, Pathway (`streak_days`) und Gutscheine. Nach Mitternacht also den Vortag;
+  fällt ein Lauf aus, holt der nächste die Tage nach. URL und Secret liegen im Supabase Vault –
 einmalig im SQL-Editor des Live-Projekts ausführen:
 
 ```sql
@@ -71,6 +75,7 @@ Lektion manuell anstoßen (lokal oder live):
 
 ```bash
 curl -X POST -H "Authorization: Bearer $JOBS_SECRET" http://localhost:3000/api/jobs/morning
+curl -X POST -H "Authorization: Bearer $JOBS_SECRET" http://localhost:3000/api/jobs/nightly
 ```
 
 Unabhängig vom Job wird die Lektion beim Öffnen der App erzeugt, falls sie noch fehlt

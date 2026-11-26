@@ -21,3 +21,11 @@ export function formatDate(iso: string): string {
     timeZone: "Europe/Berlin",
   }).format(new Date(iso));
 }
+
+export const REWARD_EMOJI: Record<string, string> = {
+  massage: "💆",
+  surprise: "🎁",
+  dinner: "🍽️",
+};
+
+export type RewardTypeRow = { type: string; title: string; description: string; interval_days: number };
