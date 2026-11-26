@@ -42,6 +42,9 @@ als Push aufs Handy und landet zusätzlich in einem kleinen Postfach in der App.
 - Empfangene und gesendete Nachrichten sind farblich unterschieden.
 - Einzelne Nachrichten lassen sich als Favorit markieren und unter „Favorites“ wiederfinden.
 - Keine Lesebestätigung für den Absender. So entsteht kein Druck, sofort zu antworten.
+- **[Entschieden]** Jede Nachricht lässt sich löschen, **nur für mich**: Beim anderen bleibt sie im Postfach.
+  Erst wenn beide gelöscht haben, wird sie ganz entfernt (`delete_love_note(id)`,
+  Spalten `deleted_by_sender` / `deleted_by_recipient`).
 
 ### Voraussetzungen
 

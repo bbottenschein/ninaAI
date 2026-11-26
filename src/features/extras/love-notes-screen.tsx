@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { PageHeader } from "@/features/shell/page-header";
-import { markLoveNotesRead, sendLoveNote, toggleLoveNoteFavorite } from "./actions";
+import { deleteLoveNote, markLoveNotesRead, sendLoveNote, toggleLoveNoteFavorite } from "./actions";
 import { formatNoteTime, LOVE_COUNTER_FROM, LOVE_MAX, viewOf, type LoveNote } from "./love-notes";
 
 type Tab = "all" | "favorites";
@@ -25,6 +25,8 @@ export function LoveNotesScreen({
   const [hearts, setHearts] = useState(0);
   const [tab, setTab] = useState<Tab>("all");
   const [favorites, setFavorites] = useState<Record<string, boolean>>({});
+  const [removed, setRemoved] = useState<Set<string>>(() => new Set());
+  const [confirming, setConfirming] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   // Beim Öffnen ungelesene Notes merken, damit sie diesmal noch als „neu“ erscheinen.
   const [newIds] = useState(() => new Set(notes.filter((n) => viewOf(n, userId).unread).map((n) => n.id)));
@@ -56,8 +58,25 @@ export function LoveNotesScreen({
     });
   }
 
+  function remove(note: LoveNote) {
+    setConfirming(null);
+    setRemoved((r) => new Set(r).add(note.id));
+    startTransition(async () => {
+      const r = await deleteLoveNote(note.id);
+      if (r.error) {
+        setError(r.error);
+        setRemoved((prev) => {
+          const next = new Set(prev);
+          next.delete(note.id);
+          return next;
+        });
+      }
+    });
+  }
+
   const isFavorite = (n: LoveNote) => favorites[n.id] ?? viewOf(n, userId).favorite;
-  const shown = tab === "favorites" ? notes.filter(isFavorite) : notes;
+  const visible = notes.filter((n) => !removed.has(n.id));
+  const shown = tab === "favorites" ? visible.filter(isFavorite) : visible;
 
   return (
     <>
@@ -150,7 +169,27 @@ export function LoveNotesScreen({
                     {newIds.has(n.id) && <span className="ml-1.5 chip bg-accent px-2 py-0.5 text-[10px] text-on-accent">neu</span>}
                   </p>
                   <p className="mt-1 break-words whitespace-pre-line">{n.text}</p>
-                  <div className="mt-1 flex justify-end">
+                  <div className="mt-1 flex items-center justify-end gap-3">
+                    {confirming === n.id ? (
+                      <>
+                        <span className="mr-auto text-xs text-muted">Nur bei dir löschen?</span>
+                        <button type="button" onClick={() => setConfirming(null)} className="text-xs font-bold text-muted">
+                          Abbrechen
+                        </button>
+                        <button type="button" onClick={() => remove(n)} className="text-xs font-extrabold text-danger">
+                          Löschen
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setConfirming(n.id)}
+                        aria-label="Nachricht löschen"
+                        className="text-base leading-none opacity-60 transition active:scale-90"
+                      >
+                        🗑️
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() => toggle(n, fav)}
