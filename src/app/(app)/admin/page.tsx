@@ -25,7 +25,7 @@ export default async function AdminPage() {
       <PushSettings
         publicKey={vapidConfig()?.publicKey ?? null}
         title="Benachrichtigungen"
-        description="Wenn Nina einen Gutschein verdient oder einlöst."
+        description="Wenn Nina einen Gutschein verdient oder einlöst und wenn sie dir eine Love Note schickt."
       />
     </>
   );
