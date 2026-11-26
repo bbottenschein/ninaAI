@@ -85,7 +85,7 @@ export async function sendLoveNote(input: string): Promise<{ error?: string }> {
   }
   // Ein Fehler beim Push ändert nichts daran, dass die Nachricht im Postfach liegt.
   try {
-    await sendPush([recipient.id], { ...LOVE_PUSH });
+    await sendPush([recipient.id], { ...LOVE_PUSH }, "love_notes");
   } catch (pushError) {
     console.error("[love-notes] Push fehlgeschlagen", pushError);
   }

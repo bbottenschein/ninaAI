@@ -2,7 +2,7 @@
 
 Private App (PWA) für Nina, Admin ist Benedikt. Module: „Daily Learning“ (Englisch & Politik,
 Spezifikation in `SPEC.md`), „Remind me“ (To-dos, `SPEC-remind-me.md`) „Journal“
-(`SPEC-journal.md`) und Extras (Love Notes, Schütteln; `SPEC-extras.md`) – vor größeren Änderungen lesen.
+(`SPEC-journal.md`) Extras (Love Notes, Schütteln; `SPEC-extras.md`) und Einstellungen/Designs (`SPEC-settings.md`) – vor größeren Änderungen lesen.
 
 @AGENTS.md
 
@@ -27,7 +27,7 @@ Cron läuft in UTC: Jobs laufen stündlich und sind idempotent, statt auf eine f
   - `(app)/` – alles hinter dem Login, mit Tab-Leiste.
   - `(app)/(learn)/` – Daily Learning mit Unter-Tabs (Lektion, Vokabeln, Knowledge, Success).
   - `login/` – öffentlich.
-- `src/features/<modul>/` – ein Ordner pro Feature-Modul (`home`, `today`, `news`, `lesson`, `quiz`, `tutor`, `vocab`, `knowledge`, `streak`, `remind`, `journal`, `extras`, `notifications`,
+- `src/features/<modul>/` – ein Ordner pro Feature-Modul (`home`, `today`, `news`, `lesson`, `quiz`, `tutor`, `vocab`, `knowledge`, `streak`, `remind`, `journal`, `extras`, `settings`, `notifications`,
   `rewards`, `admin`, `auth`, `shell`). Komponenten, Server Actions, Queries und reine Logik
   des Moduls liegen dort. Ein neues Feature = neuer Ordner + Eintrag in `src/features/shell/tabs.ts`.
 - `src/lib/` – modulübergreifende Helfer (Supabase-Clients, Datum, Env).

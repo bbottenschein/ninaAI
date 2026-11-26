@@ -55,7 +55,7 @@ export async function runTodoReminders(now = new Date()) {
     const ids = new Set((claimed ?? []).map((c) => c.id as string));
     const mine = reminders.filter((r) => ids.has(r.id));
     if (mine.length === 0) continue;
-    sent += await sendPush([ownerId], reminderPush(mine));
+    sent += await sendPush([ownerId], reminderPush(mine), "reminders");
   }
 
   return { due: due.length, sent, deferred: plan.defer.length, skipped: plan.skip.length };

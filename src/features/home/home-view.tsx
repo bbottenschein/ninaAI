@@ -1,10 +1,9 @@
 import Link from "next/link";
 import { addDays, formatLongDate } from "@/lib/date";
-import { logout } from "@/features/auth/actions";
 import { REWARD_EMOJI } from "@/features/rewards/labels";
 import { nextMilestone } from "@/features/rewards/milestones";
 import { Mouse } from "@/features/shell/mouse";
-import { HeaderButton, PageHeader } from "@/features/shell/page-header";
+import { PageHeader } from "@/features/shell/page-header";
 import { JokerNotice } from "@/features/streak/joker-notice";
 import { AutoRefresh } from "@/features/today/auto-refresh";
 import type { TodayData } from "@/features/today/queries";
@@ -51,6 +50,13 @@ export function HomeHeader({
         action={
           <div className="flex shrink-0 items-center gap-2">
             <Link
+              href="/einstellungen"
+              aria-label="Einstellungen"
+              className="flex size-10 items-center justify-center rounded-full border-2 border-border bg-surface text-xl transition active:scale-90"
+            >
+              <span aria-hidden>⚙️</span>
+            </Link>
+            <Link
               href="/love-notes"
               aria-label={unreadNote ? "Love Notes – neue Nachricht" : "Love Notes"}
               className="relative flex size-10 items-center justify-center rounded-full border-2 border-border bg-surface text-xl transition active:scale-90"
@@ -60,9 +66,6 @@ export function HomeHeader({
                 <span className="absolute -top-0.5 -right-0.5 size-3.5 rounded-full border-2 border-background bg-accent" />
               )}
             </Link>
-            <form action={logout}>
-              <HeaderButton>Abmelden</HeaderButton>
-            </form>
           </div>
         }
       />
