@@ -109,3 +109,13 @@ export async function toggleLoveNoteFavorite(id: string): Promise<{ favorite?: b
   if (error) return { error: "Konnte nicht gespeichert werden." };
   return { favorite: Boolean(data) };
 }
+
+/** Love Note nur für mich löschen (beim anderen bleibt sie). */
+export async function deleteLoveNote(id: string): Promise<{ error?: string }> {
+  await getCurrentUser();
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("delete_love_note", { p_id: id });
+  if (error) return { error: "Konnte nicht gelöscht werden." };
+  revalidatePath("/love-notes");
+  return {};
+}
