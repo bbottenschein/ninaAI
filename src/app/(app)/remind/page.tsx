@@ -7,7 +7,9 @@ import { PushSettings } from "@/features/notifications/push-settings";
 import { getCurrentUser } from "@/features/auth/session";
 import { loadRemind } from "@/features/remind/queries";
 import { REMIND_AREA_COOKIE, parseAreaFilter } from "@/features/remind/area-cookie";
+import { OverviewToggle } from "@/features/remind/overview-toggle";
 import { RemindScreen } from "@/features/remind/remind-screen";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Remind me" };
 
@@ -17,7 +19,11 @@ export default async function RemindPage({ searchParams }: PageProps<"/remind">)
   if (user.role !== "player") redirect("/");
 
   const today = berlinDate();
-  const [data, cookieStore] = await Promise.all([loadRemind(today), cookies()]);
+  const [data, cookieStore, settings] = await Promise.all([
+    loadRemind(today),
+    cookies(),
+    createClient().then((s) => s.from("user_settings").select("daily_overview").eq("user_id", user.id).maybeSingle()),
+  ]);
   const initialArea = parseAreaFilter(cookieStore.get(REMIND_AREA_COOKIE)?.value);
   const { todo } = await searchParams;
 
@@ -34,6 +40,7 @@ export default async function RemindPage({ searchParams }: PageProps<"/remind">)
         title="Erinnerungen aufs Handy"
         description="Push zur eingestellten Zeit. Für Kritisches (Medikamente, Flug) lieber zusätzlich den Handy-Wecker nutzen."
       />
+      <OverviewToggle initial={settings.data?.daily_overview ?? false} />
     </>
   );
 }
