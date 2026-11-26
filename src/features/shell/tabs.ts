@@ -9,7 +9,7 @@ export type Tab = {
 };
 
 // Die Schritte des Tages liegen unter eigenen Pfaden, gehören aber zu „Heute“.
-const TODAY: Tab = { href: "/", label: "Heute", icon: "today", sections: ["/news"] };
+const TODAY: Tab = { href: "/", label: "Heute", icon: "today", sections: ["/news", "/quiz", "/tutor"] };
 
 // Jedes Feature-Modul bringt seinen eigenen Tab mit. Neue Module hier eintragen.
 const PLAYER_TABS: Tab[] = [

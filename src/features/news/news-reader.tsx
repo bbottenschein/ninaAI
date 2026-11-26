@@ -6,7 +6,8 @@ import type { LessonNews } from "@/features/lesson/schema";
 import { markNewsRead } from "./actions";
 import { Mouse } from "@/features/shell/mouse";
 import { annotate, type Mark, type MarkKind } from "./annotate";
-import { NEWS_LANG_COOKIE, type NewsLang } from "./lang";
+import { type NewsLang } from "./lang";
+import { LangToggle, saveNewsLang } from "./lang-toggle";
 
 type Lang = NewsLang;
 type Selection = { news: number; kind: MarkKind; index: number };
@@ -39,7 +40,7 @@ export function NewsReader({
   function chooseLang(next: Lang) {
     setLang(next);
     setSelection(null);
-    document.cookie = `${NEWS_LANG_COOKIE}=${next}; path=/; max-age=31536000; samesite=lax`;
+    saveNewsLang(next);
   }
 
   function markRead(index: number) {
@@ -111,8 +112,8 @@ export function NewsReader({
           <Mouse mood="party" className="mx-auto size-20" />
           <p className="mt-2 text-lg font-extrabold">Alle 3 Meldungen gelesen!</p>
           <p className="mt-1 text-sm text-muted">Als Nächstes kommt das Quiz of the Day.</p>
-          <Link href="/" className="btn-primary mt-4 inline-block">
-            Zurück zu Heute
+          <Link href={readOnly ? "/" : "/quiz"} className="btn-primary mt-4 inline-block">
+            {readOnly ? "Zurück zu Heute" : "Zum Quiz ›"}
           </Link>
         </div>
       )}
@@ -131,25 +132,6 @@ export function NewsReader({
   );
 }
 
-function LangToggle({ lang, onChange }: { lang: Lang; onChange: (lang: Lang) => void }) {
-  return (
-    <div role="group" aria-label="Sprache" className="flex rounded-full border-2 border-border bg-surface p-1">
-      {(["en", "de"] as const).map((option) => (
-        <button
-          key={option}
-          type="button"
-          aria-pressed={lang === option}
-          onClick={() => onChange(option)}
-          className={`rounded-full px-3.5 py-1.5 text-sm font-extrabold transition-colors ${
-            lang === option ? "bg-accent text-on-accent" : "text-muted"
-          }`}
-        >
-          {option.toUpperCase()}
-        </button>
-      ))}
-    </div>
-  );
-}
 
 function marksFor(item: LessonNews, lang: Lang): Mark[] {
   const marks: Mark[] = [];

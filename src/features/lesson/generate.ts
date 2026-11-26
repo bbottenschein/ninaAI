@@ -2,7 +2,7 @@ import "server-only";
 import { loadAllFeeds, loadArticleText, type SourcedItem } from "@/lib/news/feed";
 import { selectRecent } from "@/lib/news/normalize";
 import type { Region } from "@/lib/news/sources";
-import { askStructured } from "./claude";
+import { askStructured } from "@/lib/claude";
 import {
   LESSON_SYSTEM,
   RANKING_SYSTEM,

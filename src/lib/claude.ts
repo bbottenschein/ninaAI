@@ -4,7 +4,7 @@ import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import type { z } from "zod";
 import { anthropicApiKey } from "@/lib/env.server";
 
-export const LESSON_MODEL = "claude-opus-5-5";
+export const CLAUDE_MODEL = "claude-opus-5-5";
 
 let client: Anthropic | null = null;
 function getClient(): Anthropic {
@@ -25,7 +25,7 @@ export async function askStructured<S extends z.ZodType>(options: {
   maxTokens: number;
 }): Promise<z.infer<S>> {
   const response = await getClient().beta.messages.parse({
-    model: LESSON_MODEL,
+    model: CLAUDE_MODEL,
     max_tokens: options.maxTokens,
     betas: ["server-side-fallback-2026-07-01"],
     fallbacks: "default",

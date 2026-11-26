@@ -113,8 +113,13 @@ Fragen zu den News des Tages.
   Wiederholung ohne Einfluss auf die Streak.
 - Fallback: Funktioniert das Mikrofon nicht, kann sie die Antworten tippen.
 - **[Review] Technik:** Aufnahme im Browser (MediaRecorder), Spracherkennung serverseitig
-  per OpenAI Whisper, Antwort per Claude, Sprachausgabe per OpenAI TTS. Die Browser-eigene
-  Spracherkennung wird nicht genutzt (in iPhone-PWAs unzuverlässig).
+  per OpenAI, Antwort per Claude. Die Browser-eigene Spracherkennung wird nicht genutzt
+  (in iPhone-PWAs unzuverlässig).
+- **[Umsetzung Phase 3]** OpenAI schaltet `whisper-1` am 26.02.2027 und alle TTS-Modelle am
+  06.01.2027 ab. Daher: Spracherkennung mit `gpt-transcribe` (über `OPENAI_TRANSCRIBE_MODEL`
+  tauschbar), Sprachausgabe mit der **Stimme des Geräts** (Web Speech API, bevorzugt
+  amerikanische Frauenstimme, kostenlos). Tageslimit: **5 Minuten Aufnahme** (Tabelle
+  `voice_usage`), danach geht es per Tippen weiter.
 
 ## Streak, Joker & Pathway
 
@@ -263,7 +268,7 @@ Sechs Phasen, jede endet mit einer nutzbaren Version. Nach Phase 3 kann sie die 
 
 - [x] **Phase 1 – Grundgerüst:** Next.js-PWA, Supabase-Projekt, Login für 2 Konten, Tab-Navigation (Heute, Vokabeln, Knowledge, Gutscheine).
 - [x] **Phase 2 – News des Tages:** Morgen-Job, News-Ansicht mit EN/DE-Toggle, Begriffs-Erklärungen, Personen mit Amt.
-- [ ] **Phase 3 – Quiz & Tutor:** Quiz of the Day, Tutor-Gespräch per Stimme mit Text-Fallback, Abschluss-Feedback, Tagesfortschritt.
+- [x] **Phase 3 – Quiz & Tutor:** Quiz of the Day, Tutor-Gespräch per Stimme mit Text-Fallback, Abschluss-Feedback, Tagesfortschritt.
 - [ ] **Phase 4 – Streak & Belohnungen:** Nacht-Job, Streak- und Joker-Logik, Pathway, Gutscheine mit Einlösen, Admin-Bereich.
 - [ ] **Phase 5 – Vokabeln & Knowledge:** automatische Vokabelübernahme, Vokabel-Quiz, Knowledge Section mit Schnell-Anlage aus den News.
 - [ ] **Phase 6 – Feinschliff:** Push-Reminder, Benachrichtigungen für Benedikt, Animationen, App-Icon und Design.
@@ -278,8 +283,8 @@ Die Streak-Logik (Phase 4) wird mit Unit-Tests abgesichert, z. B. für „Joker 
 - [x] Für den Streak zählt das Abschließen des Quiz, nicht die Punktzahl.
 - [x] Englisch-Niveau der Texte: B1. Später eventuell im Profil einstellbar.
 - [x] **[Review]** Lektion ab 00:00 verfügbar, On-Demand-Fallback; Tag ohne Lektion ist neutral.
-- [x] **[Review]** Sprache: OpenAI Whisper + TTS.
-- [ ] Stimme des Tutors festlegen (männlich/weiblich, britisch/amerikanisch).
+- [x] **[Review]** Sprache: OpenAI-Spracherkennung + Sprachausgabe des Geräts (siehe Tutor-Gespräch).
+- [x] Stimme des Tutors: weiblich, amerikanisch (Stimme des Geräts).
 - [x] **[Review]** Konkrete Quellen für die internationale Meldung: BBC World (Haupt), POLITICO Europe, CNBC Politics.
 - [x] **[Review]** Feed-URLs aus dem bestehenden News-Dashboard (siehe News des Tages › Auswahl).
 - [x] **[Review]** Anthropic-Key: als Umgebungsvariable `ANTHROPIC_API_KEY` (lokal `.env.local`, live in Vercel).
