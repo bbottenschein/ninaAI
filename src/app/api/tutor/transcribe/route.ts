@@ -1,23 +1,17 @@
 import { berlinDate } from "@/lib/date";
-import { TranscriptionUnavailableError, transcribe } from "@/lib/openai";
+import { sniffAudioExtension } from "@/lib/audio-format";
+import { TranscriptionError, transcribe } from "@/lib/openai";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { MAX_RECORDING_SECONDS, VOICE_LIMIT_SECONDS } from "@/features/tutor/logic";
 
 const MAX_BYTES = 5 * 1024 * 1024;
-const EXTENSIONS: Record<string, string> = {
-  "audio/webm": "webm",
-  "audio/mp4": "mp4",
-  "audio/mpeg": "mp3",
-  "audio/ogg": "ogg",
-  "audio/wav": "wav",
-  "audio/x-m4a": "m4a",
-};
 
 /**
  * Nimmt eine Sprachaufnahme der Spielerin entgegen, bucht die Sekunden aufs
  * Tageslimit und liefert den erkannten Text.
- * Antworten: 200 {text} · 401 · 413 · 429 {error:"limit"} · 503 {error:"unavailable"}
+ * Antworten: 200 {text} · 401 · 413 · 429 {error:"limit"} · 503 {error:"unavailable", detail}
+ * `detail` nennt die Ursache, damit sie in der App sichtbar ist (private App).
  */
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -44,16 +38,22 @@ export async function POST(request: Request) {
   });
   if (bookError) {
     console.error("[tutor] Sprachlimit buchen", bookError);
-    return Response.json({ error: "unavailable" }, { status: 503 });
+    return Response.json(
+      { error: "unavailable", detail: `Sprachlimit nicht buchbar: ${bookError.message}`.slice(0, 200) },
+      { status: 503 },
+    );
   }
   if (!booked) return Response.json({ error: "limit" }, { status: 429 });
 
-  const type = audio.type.split(";")[0];
+  // Endung nach dem echten Inhalt (iPhone: mp4, auch wenn der Typ fehlt oder abweicht).
+  const head = new Uint8Array(await audio.slice(0, 16).arrayBuffer());
+  const filename = `answer.${sniffAudioExtension(head, audio.type)}`;
   try {
-    const text = await transcribe(audio, `answer.${EXTENSIONS[type] ?? "webm"}`);
+    const text = await transcribe(audio, filename);
     return Response.json({ text });
   } catch (error) {
-    if (!(error instanceof TranscriptionUnavailableError)) console.error("[tutor] Transkription", error);
-    return Response.json({ error: "unavailable" }, { status: 503 });
+    console.error("[tutor] Transkription", filename, audio.type, audio.size, error);
+    const detail = error instanceof TranscriptionError ? error.reason : "Unerwarteter Fehler";
+    return Response.json({ error: "unavailable", detail }, { status: 503 });
   }
 }

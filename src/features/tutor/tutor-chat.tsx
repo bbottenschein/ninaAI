@@ -81,7 +81,7 @@ export function TutorChat({
       form.append("audio", blob);
       form.append("seconds", String(seconds));
       const res = await fetch("/api/tutor/transcribe", { method: "POST", body: form });
-      const data = (await res.json().catch(() => ({}))) as { text?: string; error?: string };
+      const data = (await res.json().catch(() => ({}))) as { text?: string; error?: string; detail?: string };
       if (res.ok && data.text) {
         setDraft((d) => (d ? `${d} ${data.text}` : data.text!));
         setVoiceLeft((left) => left - Math.ceil(seconds));
@@ -91,8 +91,9 @@ export function TutorChat({
       } else if (res.ok) {
         setNotice("Ich habe nichts verstanden. Versuch es nochmal oder tippe deine Antwort.");
       } else {
-        setMicOk(false);
-        setNotice("Die Spracherkennung ist gerade nicht erreichbar. Tippe deine Antwort einfach ein.");
+        setNotice(
+          `Die Spracherkennung ist gerade nicht erreichbar. Tippe deine Antwort einfach ein.${data.detail ? ` (Grund: ${data.detail})` : ` (Status ${res.status})`}`,
+        );
       }
     } catch {
       setNotice("Keine Verbindung. Versuch es nochmal oder tippe deine Antwort.");
