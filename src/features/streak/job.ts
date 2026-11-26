@@ -1,5 +1,6 @@
 import "server-only";
 import { addDays } from "@/lib/date";
+import { adminIds, sendPush } from "@/lib/push";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { evaluateDays } from "./evaluate";
 import { STREAK_COLUMNS, loadOutcomes, toRow, toState } from "./data";
@@ -37,18 +38,21 @@ export async function runNightly(today: string): Promise<NightlyResult[]> {
     if (dayError) throw dayError;
 
     if (rewards.length > 0) {
-      const { error: rewardError } = await admin.from("rewards").upsert(
-        rewards.map((r) => ({
-          user_id: row.user_id,
-          type: r.type,
-          milestone_day: r.milestoneDay,
-          streak_run_started_on: r.runStartedOn,
-        })),
-        { onConflict: "user_id,type,milestone_day,streak_run_started_on", ignoreDuplicates: true },
-      );
+      const { data: inserted, error: rewardError } = await admin
+        .from("rewards")
+        .upsert(
+          rewards.map((r) => ({
+            user_id: row.user_id,
+            type: r.type,
+            milestone_day: r.milestoneDay,
+            streak_run_started_on: r.runStartedOn,
+          })),
+          { onConflict: "user_id,type,milestone_day,streak_run_started_on", ignoreDuplicates: true },
+        )
+        .select("type, milestone_day");
       if (rewardError) throw rewardError;
-      // Benachrichtigung an Benedikt folgt mit Web Push in Phase 6.
-      console.info(`[streak] ${rewards.length} Gutschein(e) verdient`, rewards);
+      // Nur wirklich neue Gutscheine melden (beim Nachholen kein doppelter Push).
+      if (inserted && inserted.length > 0) await notifyEarned(row.user_id, inserted);
     }
 
     const { error: updateError } = await admin.from("streaks").update(toRow(state)).eq("user_id", row.user_id);
@@ -57,4 +61,26 @@ export async function runNightly(today: string): Promise<NightlyResult[]> {
     results.push({ userId: row.user_id, evaluated: days.length, rewards: rewards.length, streak: state.current });
   }
   return results;
+}
+
+/** Benedikt bekommt Bescheid, wenn Nina einen Gutschein verdient hat. */
+async function notifyEarned(userId: string, rewards: { type: string; milestone_day: number }[]) {
+  try {
+    const admin = createAdminClient();
+    const [{ data: types }, { data: player }] = await Promise.all([
+      admin.from("reward_types").select("type, title"),
+      admin.from("profiles").select("name").eq("id", userId).maybeSingle(),
+    ]);
+    const titles = new Map((types ?? []).map((t) => [t.type, t.title]));
+    const name = player?.name || "Nina";
+    const list = rewards.map((r) => titles.get(r.type) ?? r.type).join(" + ");
+    await sendPush(await adminIds(), {
+      title: `🎉 ${name} hat einen Gutschein verdient`,
+      body: `${list} – Streak-Tag ${rewards[0].milestone_day}`,
+      url: "/admin",
+      tag: "reward-earned",
+    });
+  } catch (error) {
+    console.error("[streak] Benachrichtigung fehlgeschlagen", error);
+  }
 }

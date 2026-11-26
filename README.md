@@ -76,12 +76,30 @@ Lektion manuell anstoßen (lokal oder live):
 ```bash
 curl -X POST -H "Authorization: Bearer $JOBS_SECRET" http://localhost:3000/api/jobs/morning
 curl -X POST -H "Authorization: Bearer $JOBS_SECRET" http://localhost:3000/api/jobs/nightly
+curl -X POST -H "Authorization: Bearer $JOBS_SECRET" http://localhost:3000/api/jobs/reminder
 ```
 
 Unabhängig vom Job wird die Lektion beim Öffnen der App erzeugt, falls sie noch fehlt
 (On-Demand-Fallback). Eine Datenbank-Sperre verhindert doppelte Erzeugung; nach drei
 Fehlversuchen gilt der Tag als „ohne Lektion“ (neutral für die Streak). Den letzten Fehler
 zeigt `select date, status, attempts, error from daily_lessons order by date desc;`.
+
+## Benachrichtigungen (Web Push)
+
+1. Schlüsselpaar einmalig erzeugen (lokal, mit Node):
+
+   ```bash
+   npx web-push generate-vapid-keys
+   ```
+
+2. In Vercel `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` und `VAPID_SUBJECT`
+   (`mailto:` + eine eigene Adresse) setzen und neu deployen.
+3. In der App einschalten: Nina im Heute-Tab („Tägliche Erinnerung“), Benedikt im
+   Admin-Bereich. Auf dem iPhone geht das nur, wenn NinAI vom Home-Bildschirm geöffnet wird.
+
+Es gibt drei Benachrichtigungen: die Erinnerung an Nina (19–22 Uhr, höchstens einmal pro
+Tag, nur wenn die Lektion noch offen ist; Job `/api/jobs/reminder`), und für Benedikt
+„Gutschein verdient“ (Nacht-Job) und „Gutschein eingelöst“.
 
 ## Tests
 

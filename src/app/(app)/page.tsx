@@ -1,5 +1,7 @@
 import { after } from "next/server";
 import { berlinDate } from "@/lib/date";
+import { vapidConfig } from "@/lib/env.server";
+import { PushSettings } from "@/features/notifications/push-settings";
 import { getCurrentUser } from "@/features/auth/session";
 import { ensureLesson } from "@/features/lesson/ensure";
 import { loadToday } from "@/features/today/queries";
@@ -20,5 +22,16 @@ export default async function TodayPage() {
     after(() => ensureLesson(date, "on-demand"));
   }
 
-  return <TodayView date={date} greetingName={user.name} data={data} />;
+  return (
+    <>
+      <TodayView date={date} greetingName={user.name} data={data} />
+      {user.role === "player" && (
+        <PushSettings
+          publicKey={vapidConfig()?.publicKey ?? null}
+          title="Tägliche Erinnerung"
+          description="Um 19 Uhr, falls die Lektion noch offen ist."
+        />
+      )}
+    </>
+  );
 }
