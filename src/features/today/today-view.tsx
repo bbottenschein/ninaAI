@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { formatLongDate } from "@/lib/date";
+import { addDays, formatLongDate } from "@/lib/date";
 import { logout } from "@/features/auth/actions";
 import { Mouse } from "@/features/shell/mouse";
 import { HeaderButton, PageHeader } from "@/features/shell/page-header";
 import { STEPS, isDayComplete, stepStates, type StepKey, type StepState } from "./steps";
 import type { TodayData } from "./queries";
 import { AutoRefresh } from "./auto-refresh";
+import { JokerNotice } from "@/features/streak/joker-notice";
 
 /** Wohin ein Schritt führt, sobald er offen ist. */
 const STEP_HREF: Partial<Record<StepKey, string>> = {
@@ -47,17 +48,23 @@ export function TodayView({
         }
       />
 
+      {data.jokerNotice && (
+        <JokerNotice
+          label={data.jokerNotice === addDays(date, -1) ? "gestern" : `am ${formatLongDate(data.jokerNotice)}`}
+        />
+      )}
+
       {data.streak && (
-        <section className="mb-6 grid grid-cols-3 gap-3 text-center">
+        <Link href="/gutscheine" className="mb-6 grid grid-cols-3 gap-3 text-center transition active:scale-[0.98]">
           <Stat emoji="🔥" value={data.streak.current} label="Streak" tint="bg-accent-soft text-accent-ink" />
           <Stat emoji="🏆" value={data.streak.longest} label="Längste" tint="bg-sun-soft text-sun" />
           <Stat
             emoji="🃏"
             value={data.streak.jokers > 0 ? "1" : "–"}
-            label="Joker"
+            label={data.streak.jokers > 0 ? "Joker bereit" : `Joker in ${data.streak.daysToJoker}`}
             tint="bg-lavender-soft text-lavender"
           />
-        </section>
+        </Link>
       )}
 
       {generating && (
@@ -131,7 +138,9 @@ export function TodayView({
         <div className="card mt-6 animate-pop bg-accent-soft text-center">
           <Mouse mood="party" className="mx-auto size-20" />
           <p className="mt-2 text-lg font-extrabold">Geschafft für heute! 🎉</p>
-          <p className="text-sm text-muted">Die Maus ist stolz auf dich.</p>
+          <p className="text-sm text-muted">
+            {data.streak ? `Deine Streak steht jetzt bei ${data.streak.current} 🔥` : "Die Maus ist stolz auf dich."}
+          </p>
         </div>
       )}
     </>
