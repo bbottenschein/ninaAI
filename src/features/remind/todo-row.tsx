@@ -20,12 +20,15 @@ export function TodoRow({
   listName,
   today,
   onOpen,
+  onAiEdit,
 }: {
   todo: Todo;
   area: Area;
   listName?: string;
   today: string;
   onOpen: () => void;
+  /** „Mit KI ändern“ (z. B. bei überfälligen Aufgaben). */
+  onAiEdit?: () => void;
 }) {
   const [done, setDone] = useState(Boolean(todo.completed_at));
   const [offset, setOffset] = useState(0);
@@ -164,6 +167,15 @@ export function TodoRow({
           </p>
           {todo.note && <p className="mt-1 line-clamp-1 text-xs text-muted">{todo.note}</p>}
         </button>
+        {onAiEdit && !done && (
+          <button
+            type="button"
+            onClick={onAiEdit}
+            className="shrink-0 self-center rounded-full bg-accent-soft px-2.5 py-1 text-xs font-extrabold text-accent-ink"
+          >
+            ✨ Mit KI ändern
+          </button>
+        )}
       </div>
     </li>
   );
