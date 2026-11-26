@@ -1,8 +1,8 @@
 # NinAI – Projektregeln
 
 Private App (PWA) für Nina, Admin ist Benedikt. Module: „Daily Learning“ (Englisch & Politik,
-Spezifikation in `SPEC.md`) und „Remind me“ (To-dos, `SPEC-remind-me.md`) – vor größeren
-Änderungen lesen.
+Spezifikation in `SPEC.md`), „Remind me“ (To-dos, `SPEC-remind-me.md`) und „Journal“
+(`SPEC-journal.md`) – vor größeren Änderungen lesen.
 
 @AGENTS.md
 
@@ -27,7 +27,7 @@ Cron läuft in UTC: Jobs laufen stündlich und sind idempotent, statt auf eine f
   - `(app)/` – alles hinter dem Login, mit Tab-Leiste.
   - `(app)/(learn)/` – Daily Learning mit Unter-Tabs (Lektion, Vokabeln, Knowledge, Success).
   - `login/` – öffentlich.
-- `src/features/<modul>/` – ein Ordner pro Feature-Modul (`home`, `today`, `news`, `lesson`, `quiz`, `tutor`, `vocab`, `knowledge`, `streak`, `remind`, `notifications`,
+- `src/features/<modul>/` – ein Ordner pro Feature-Modul (`home`, `today`, `news`, `lesson`, `quiz`, `tutor`, `vocab`, `knowledge`, `streak`, `remind`, `journal`, `notifications`,
   `rewards`, `admin`, `auth`, `shell`). Komponenten, Server Actions, Queries und reine Logik
   des Moduls liegen dort. Ein neues Feature = neuer Ordner + Eintrag in `src/features/shell/tabs.ts`.
 - `src/lib/` – modulübergreifende Helfer (Supabase-Clients, Datum, Env).
@@ -41,7 +41,8 @@ Cron läuft in UTC: Jobs laufen stündlich und sind idempotent, statt auf eine f
   `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` dürfen in den Browser.
 - Datenzugriff aus dem Browser läuft immer mit dem Nutzer-Token und damit über RLS.
   Der Secret Key (`SUPABASE_SECRET_KEY`) wird nur in Jobs und Skripten verwendet.
-- „Remind me“ ist privat: RLS nur für die Besitzerin, der Admin bekommt keinen Zugriff.
+- „Remind me“ und „Journal“ sind privat: RLS nur für die Besitzerin, der Admin bekommt keinen Zugriff.
+- Das Journal hat bewusst keine Pushes, keine Streak und keine Zähler.
 - Rollen stehen in `profiles.role` und werden nur über `app_metadata` gesetzt
   (`scripts/create-user.mjs`), nie aus dem Client.
 - Statuswechsel von Gutscheinen nur über die DB-Funktionen `redeem_reward` / `fulfill_reward`.

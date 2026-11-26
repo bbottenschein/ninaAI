@@ -2,11 +2,11 @@ import { describe, expect, it } from "vitest";
 import { isActive, tabsFor } from "./tabs";
 
 describe("tabsFor", () => {
-  it("zeigt der Spielerin Home, Daily Learning und Remind me", () => {
-    expect(tabsFor("player").map((t) => t.label)).toEqual(["Home", "Daily Learning", "Remind me"]);
+  it("zeigt der Spielerin Home, Daily Learning, Remind me und Journal", () => {
+    expect(tabsFor("player").map((t) => t.label)).toEqual(["Home", "Daily Learning", "Remind me", "Journal"]);
   });
 
-  it("zeigt dem Admin Home und Admin – aber kein Remind me", () => {
+  it("zeigt dem Admin Home und Admin – aber weder Remind me noch Journal", () => {
     expect(tabsFor("admin").map((t) => t.href)).toEqual(["/", "/admin"]);
   });
 });

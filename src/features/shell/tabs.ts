@@ -3,7 +3,7 @@ import type { Role } from "@/features/auth/session";
 export type Tab = {
   href: string;
   label: string;
-  icon: "home" | "learn" | "remind" | "admin";
+  icon: "home" | "learn" | "remind" | "journal" | "admin";
   /** Weitere Pfade, unter denen der Tab aktiv ist (z. B. Unter-Tabs und Schritte). */
   sections?: string[];
 };
@@ -21,9 +21,12 @@ const LEARN: Tab = {
 // Modul „Remind me“ (siehe SPEC-remind-me.md). Neue Module hier eintragen.
 const REMIND: Tab = { href: "/remind", label: "Remind me", icon: "remind" };
 
-const PLAYER_TABS: Tab[] = [HOME, LEARN, REMIND];
+// Modul „Journal“ (siehe SPEC-journal.md): privat, ohne Streak und ohne Pushes.
+const JOURNAL: Tab = { href: "/journal", label: "Journal", icon: "journal" };
 
-// Der Admin sieht „Remind me“ nicht (privat), aber Ninas Lektion über Home.
+const PLAYER_TABS: Tab[] = [HOME, LEARN, REMIND, JOURNAL];
+
+// Der Admin sieht „Remind me“ und „Journal“ nicht (privat), aber Ninas Lektion über Home.
 const ADMIN_TABS: Tab[] = [HOME, { href: "/admin", label: "Admin", icon: "admin" }];
 
 export function tabsFor(role: Role): Tab[] {

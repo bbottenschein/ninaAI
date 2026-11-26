@@ -5,6 +5,9 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/features/auth/session";
 import { HomeHeader } from "@/features/home/home-view";
 import { HomeTodos } from "@/features/home/home-todos";
+import { JournalHomeCard } from "@/features/journal/home-card";
+import { showHomeCard } from "@/features/journal/logic";
+import { loadEntries } from "@/features/journal/queries";
 import { ensureLesson } from "@/features/lesson/ensure";
 import { PushSettings } from "@/features/notifications/push-settings";
 import { isWeekend, type TodoList } from "@/features/remind/logic";
@@ -19,13 +22,15 @@ export default async function HomePage() {
   const date = berlinDate();
   const isPlayer = user.role === "player";
 
-  const [data, todos, lists] = await Promise.all([
+  const [data, todos, lists, journal] = await Promise.all([
     loadToday(date, user),
     isPlayer ? loadHomeTodos(date) : Promise.resolve([]),
     isPlayer
       ? createClient().then(async (s) => ((await s.from("todo_lists").select("id, area, name, sort_order").order("sort_order")).data ?? []) as TodoList[])
       : Promise.resolve([]),
+    isPlayer ? loadEntries([date]) : Promise.resolve([]),
   ]);
+  const journalEntry = journal[0] ?? null;
 
   // Fehlt die Lektion noch, wird sie jetzt erzeugt (On-Demand-Fallback).
   if (data.lessonPhase === "start") after(() => ensureLesson(date, "on-demand"));
@@ -33,6 +38,7 @@ export default async function HomePage() {
   return (
     <>
       <HomeHeader date={date} name={user.name} data={data} />
+      {isPlayer && showHomeCard(new Date(), Boolean(journalEntry)) && <JournalHomeCard entry={journalEntry} />}
       {isPlayer && <HomeTodos todos={todos} lists={lists} today={date} weekend={isWeekend(date)} />}
       {isPlayer && (
         <PushSettings
