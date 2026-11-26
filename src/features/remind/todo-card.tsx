@@ -19,11 +19,18 @@ export function TodoCard({
   draft,
   today,
   onClose,
+  onSaved,
+  createdVia = "form",
+  heading,
 }: {
   lists: TodoList[];
   draft: TodoDraft;
   today: string;
   onClose: () => void;
+  /** Nach erfolgreichem Speichern (z. B. um einen KI-Vorschlag abzuhaken). */
+  onSaved?: () => void;
+  createdVia?: "form" | "ai_text" | "ai_voice";
+  heading?: string;
 }) {
   const existing = Boolean(draft.id);
   const initialList = lists.find((l) => l.id === draft.list_id);
@@ -93,9 +100,13 @@ export function TodoCard({
         reminder,
         repeatRule: repeatRule(),
         priority,
+        createdVia,
       });
       if (result.error) setError(result.error);
-      else onClose();
+      else {
+        onSaved?.();
+        onClose();
+      }
     });
   }
 
@@ -120,7 +131,7 @@ export function TodoCard({
       >
         <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-border" aria-hidden />
         <div className="mb-3 flex items-center justify-between">
-          <p className="font-extrabold">{existing ? "Aufgabe bearbeiten" : "Neue Aufgabe"}</p>
+          <p className="font-extrabold">{heading ?? (existing ? "Aufgabe bearbeiten" : "Neue Aufgabe")}</p>
           <button
             type="button"
             onClick={() => setPriority(!priority)}

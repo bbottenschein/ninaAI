@@ -109,6 +109,12 @@ korrigiert bei Bedarf und tippt auf „Speichern“.
 - **Standardzeiten:** „Abend“ = 19:00, „Morgen früh“ = 08:00, ohne Uhrzeit = ganztägig mit Erinnerung um 09:00.
 - **Kontext:** Claude bekommt das heutige Datum, die Zeitzone Europe/Berlin und die offenen Aufgaben (Titel, Datum) mit, damit „nächsten Freitag“ und „Zahnarzt“ richtig aufgelöst werden.
 - **Fallback:** Klappt die KI nicht (z. B. keine Verbindung), öffnet sich die leere Karte mit dem eingegebenen Text als Titel.
+- **[Umsetzung]** Claude liefert Operationen (anlegen / ändern / löschen / abhaken) als striktes JSON
+  (`src/features/remind/ai-schema.ts`). Eine getestete Prüfung (`ai-normalize.ts`) gleicht sie mit den
+  echten Listen und Aufgaben ab und verwirft Ungültiges. Bei Änderungen liefert Claude den vollständigen
+  neuen Stand; mehrere Treffer → „Welche Aufgabe meinst du?“. Ohne ausdrückliche Erinnerung bekommt eine
+  Aufgabe mit Datum „zur Fälligkeit“ (ganztägig 09:00), ohne Datum keine. Die Spracheingabe nutzt das
+  Tageslimit des Tutors (5 Minuten Aufnahme).
 
 ## Benachrichtigungen
 
@@ -170,7 +176,7 @@ Vier Phasen. Nach Phase 2 ist „Remind me“ im Alltag voll nutzbar.
 
 - [x] **Phase R1 – Grundgerüst:** neue Navigation (Home, Daily Learning mit Success-Unter-Tab, Remind me), Tabellen mit RLS, Bereiche Work Mode und Life Mode, Korrektur-Karte zum manuellen Anlegen und Bearbeiten, To-Do Overview mit Umschalter und Ansichten Heute / Geplant / Listen / Erledigt.
 - [x] **Phase R2 – Home & Erinnerungen:** Home mit Tagesstatus (Datum, Lektion, Streak, heute fällige To-dos), Erinnerungs-Job, Push mit „Erledigt“ und „Später“, Wiederholungen, Wochenend-Regel für den Work Mode.
-- [ ] **Phase R3 – KI-Eingabe:** KI-Eingabefeld, das die Karte vorbefüllt, mit Bereichserkennung, Spracheingabe, Standardzeiten, mehreren Aufgaben pro Satz und Änderungen per KI (inkl. Button „Mit KI ändern“).
+- [x] **Phase R3 – KI-Eingabe:** KI-Eingabefeld, das die Karte vorbefüllt, mit Bereichserkennung, Spracheingabe, Standardzeiten, mehreren Aufgaben pro Satz und Änderungen per KI (inkl. Button „Mit KI ändern“).
 - [ ] **Phase R4 – Extras:** Tagesüberblick um 07:30, gemeinsame Liste mit Benedikt.
 
 ## Offene Punkte

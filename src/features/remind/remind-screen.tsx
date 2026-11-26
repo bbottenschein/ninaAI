@@ -8,6 +8,7 @@ import { clearCompleted, createList, deleteList, renameList, setTodoDone } from 
 import { saveAreaFilter } from "./area-cookie";
 import { AREA_STYLE } from "./format";
 import { bucketOf, compareTodos, type Area, type AreaFilter, type Todo, type TodoList } from "./logic";
+import { AiInput } from "./ai-input";
 import { ReminderSheet } from "./reminder-sheet";
 import { TodoCard, type TodoDraft } from "./todo-card";
 import { TodoRow } from "./todo-row";
@@ -42,7 +43,7 @@ export function RemindScreen({
   const [area, setArea] = useState<AreaFilter>(initialArea);
   const [view, setView] = useState<View>("today");
   const [card, setCard] = useState<TodoDraft | null>(null);
-  const [quick, setQuick] = useState("");
+  const [aiFocus, setAiFocus] = useState<Todo | null>(null);
   const [listOpen, setListOpen] = useState<string | null>(null);
 
   const listById = useMemo(() => new Map(lists.map((l) => [l.id, l])), [lists]);
@@ -61,6 +62,10 @@ export function RemindScreen({
 
   const row = (t: Todo) => (
     <TodoRow
+      onAiEdit={bucketOf(t.due_date, today) === "overdue" ? () => {
+        setAiFocus(t);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } : undefined}
       key={`${t.id}-${t.completed_at ?? ""}-${t.due_date ?? ""}`}
       todo={t}
       area={areaOf(t)}
@@ -99,24 +104,15 @@ export function RemindScreen({
         ))}
       </div>
 
-      {/* Eingabe – in Phase R3 füllt hier die KI die Karte vor */}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          newTodo(quick.trim());
-          setQuick("");
-        }}
-        className="card mb-6 flex items-center gap-2 p-2"
-      >
-        <input
-          value={quick}
-          onChange={(e) => setQuick(e.target.value)}
-          placeholder="Was steht an?"
-          aria-label="Neue Aufgabe"
-          className="min-w-0 flex-1 bg-transparent px-3 py-2 text-base outline-none"
-        />
-        <button className="btn-primary shrink-0 px-4 py-2 text-sm">Hinzufügen</button>
-      </form>
+      {/* Eingabe: Claude füllt aus einem Satz die Karte vor (SPEC-remind-me › Eingabe) */}
+      <AiInput
+        lists={lists}
+        todos={open}
+        today={today}
+        focus={aiFocus}
+        onClearFocus={() => setAiFocus(null)}
+        onManual={(title) => newTodo(title)}
+      />
 
       {/* Ansichten */}
       <div role="tablist" aria-label="Ansicht" className="mb-4 flex gap-2 overflow-x-auto">
