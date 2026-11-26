@@ -94,16 +94,19 @@ export function AiInput({
       form.append("audio", blob);
       form.append("seconds", String(seconds));
       const res = await fetch("/api/tutor/transcribe", { method: "POST", body: form });
-      const data = (await res.json().catch(() => ({}))) as { text?: string; error?: string };
+      const data = (await res.json().catch(() => ({}))) as { text?: string; error?: string; detail?: string };
       if (res.ok && data.text) {
         setText(data.text);
         setVia("ai_voice");
         submit(data.text, "ai_voice");
       } else if (data.error === "limit") {
         setMessage("Dein Sprach-Limit für heute ist aufgebraucht – tipp einfach.");
-      } else {
-        setMicOk(res.ok);
+      } else if (res.ok) {
         setMessage("Ich habe nichts verstanden. Versuch es nochmal oder tippe.");
+      } else {
+        setMessage(
+          `Die Spracherkennung ist gerade nicht erreichbar – tipp einfach.${data.detail ? ` (Grund: ${data.detail})` : ` (Status ${res.status})`}`,
+        );
       }
     } catch {
       setMessage("Keine Verbindung – tipp einfach.");
