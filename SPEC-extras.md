@@ -99,11 +99,17 @@ Drei neue Tabellen. Die Push-Infrastruktur aus Daily Learning wird wiederverwend
 - compliments: für Nina nur lesbar, für die Admin-Rolle bearbeitbar.
 - Senden einer Love Note: Server-Endpunkt speichert die Nachricht und verschickt sofort den Push an das Handy des Empfängers.
 - Kompliment-Auswahl: zufällig aus den aktiven Komplimenten, die in der aktuellen Runde noch nicht gezeigt wurden.
+- **[Umsetzung]** Love Notes: Seite `/love-notes` (Briefumschlag 💌 oben rechts auf Home, beide Konten).
+  Senden als Server Action (`sendLoveNote`), Empfänger ist immer das andere Konto (`is_love_partner`).
+  `love_notes` hat nur select/insert für Nutzer; `read_at` und Favoriten ändern die DB-Funktionen
+  `mark_love_notes_read()` (nur Empfänger) und `toggle_love_note_favorite(id)` (jede Seite ihren eigenen).
+  Beim Öffnen des Postfachs werden empfangene Notes als gelesen markiert (diesmal noch mit „neu“).
+  Benedikt schaltet Pushes im Admin-Tab ein, Nina auf Home.
 
 ## Umsetzung in Phasen
 
 - [x] **Phase E1 – Schütteln:** Bewegungserkennung mit Sperre, Blütenregen-Animation, Kompliment-Karte, 50 Start-Komplimente, Verwaltung im Admin-Bereich, Erlaubnis-Abfrage auf dem iPhone.
-- [ ] **Phase E2 – Love Notes:** Tabelle mit RLS, Schreiben und Postfach für beide Konten, Push an den Empfänger, ungelesen-Punkt auf Home, Favoriten.
+- [x] **Phase E2 – Love Notes:** Tabelle mit RLS, Schreiben und Postfach für beide Konten, Push an den Empfänger, ungelesen-Punkt auf Home, Favoriten.
 
 ## Offene Punkte
 

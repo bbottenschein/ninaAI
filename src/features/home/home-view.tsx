@@ -11,7 +11,18 @@ import type { TodayData } from "@/features/today/queries";
 import { stepStates } from "@/features/today/steps";
 
 /** Kopf, Daily-Learning-Status und Streak auf Home (SPEC-remind-me › Home). */
-export function HomeHeader({ date, name, data }: { date: string; name: string; data: TodayData }) {
+export function HomeHeader({
+  date,
+  name,
+  data,
+  unreadNote = false,
+}: {
+  date: string;
+  name: string;
+  data: TodayData;
+  /** Ungelesene Love Note → Punkt am Briefumschlag. */
+  unreadNote?: boolean;
+}) {
   const states = stepStates(data.progress);
   const doneSteps = Object.values(states).filter((s) => s === "done").length;
   const generating = data.lessonPhase === "generating" || data.lessonPhase === "start";
@@ -38,9 +49,21 @@ export function HomeHeader({ date, name, data }: { date: string; name: string; d
         subtitle={formatLongDate(date)}
         title={`Hi ${name}!`}
         action={
-          <form action={logout}>
-            <HeaderButton>Abmelden</HeaderButton>
-          </form>
+          <div className="flex shrink-0 items-center gap-2">
+            <Link
+              href="/love-notes"
+              aria-label={unreadNote ? "Love Notes – neue Nachricht" : "Love Notes"}
+              className="relative flex size-10 items-center justify-center rounded-full border-2 border-border bg-surface text-xl transition active:scale-90"
+            >
+              <span aria-hidden>💌</span>
+              {unreadNote && (
+                <span className="absolute -top-0.5 -right-0.5 size-3.5 rounded-full border-2 border-background bg-accent" />
+              )}
+            </Link>
+            <form action={logout}>
+              <HeaderButton>Abmelden</HeaderButton>
+            </form>
+          </div>
         }
       />
 

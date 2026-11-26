@@ -3,7 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser, requireAdmin } from "@/features/auth/session";
+import { sendPush } from "@/lib/push";
 import { COMPLIMENT_MAX, pickCompliment } from "./compliments";
+import { cleanLoveNote, LOVE_PUSH } from "./love-notes";
+import { loveNotePartner } from "./queries";
 
 /** Nächstes Kompliment für Nina auswählen und als gezeigt merken. */
 export async function nextCompliment(): Promise<{ text?: string }> {
@@ -61,4 +64,48 @@ export async function setComplimentActive(id: string, active: boolean): Promise<
   if (error) return { error: "Konnte nicht gespeichert werden." };
   revalidatePath("/admin");
   return {};
+}
+
+/** Love Note an das jeweils andere Konto schicken und sofort pushen. */
+export async function sendLoveNote(input: string): Promise<{ error?: string }> {
+  const user = await getCurrentUser();
+  const cleaned = cleanLoveNote(String(input ?? ""));
+  if ("error" in cleaned) return { error: cleaned.error };
+
+  const recipient = await loveNotePartner(user.role);
+  if (!recipient) return { error: "Niemand da, der die Nachricht bekommen kann." };
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("love_notes")
+    .insert({ sender_id: user.id, recipient_id: recipient.id, text: cleaned.text });
+  if (error) {
+    console.error("[love-notes] senden", error);
+    return { error: "Konnte nicht gesendet werden. Bitte nochmal versuchen." };
+  }
+  // Ein Fehler beim Push ändert nichts daran, dass die Nachricht im Postfach liegt.
+  try {
+    await sendPush([recipient.id], { ...LOVE_PUSH });
+  } catch (pushError) {
+    console.error("[love-notes] Push fehlgeschlagen", pushError);
+  }
+  revalidatePath("/love-notes");
+  return {};
+}
+
+/** Alle empfangenen Notes als gelesen markieren (Postfach geöffnet). */
+export async function markLoveNotesRead() {
+  await getCurrentUser();
+  const supabase = await createClient();
+  await supabase.rpc("mark_love_notes_read");
+  revalidatePath("/", "layout");
+}
+
+/** Eigenen Favoriten umschalten. */
+export async function toggleLoveNoteFavorite(id: string): Promise<{ favorite?: boolean; error?: string }> {
+  await getCurrentUser();
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("toggle_love_note_favorite", { p_id: id });
+  if (error) return { error: "Konnte nicht gespeichert werden." };
+  return { favorite: Boolean(data) };
 }
