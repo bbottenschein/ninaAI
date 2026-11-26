@@ -37,8 +37,8 @@ export default async function HomePage() {
       {isPlayer && (
         <PushSettings
           publicKey={vapidConfig()?.publicKey ?? null}
-          title="Tägliche Lern-Erinnerung"
-          description="Um 19 Uhr, falls die Lektion noch offen ist."
+          title="Benachrichtigungen"
+          description="Deine Erinnerungen aus Remind me und um 19 Uhr die Lern-Erinnerung."
         />
       )}
     </>

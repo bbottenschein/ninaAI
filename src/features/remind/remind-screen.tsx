@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { Mouse } from "@/features/shell/mouse";
 import { PageHeader } from "@/features/shell/page-header";
@@ -7,6 +8,7 @@ import { clearCompleted, createList, deleteList, renameList, setTodoDone } from 
 import { saveAreaFilter } from "./area-cookie";
 import { AREA_STYLE } from "./format";
 import { bucketOf, compareTodos, type Area, type AreaFilter, type Todo, type TodoList } from "./logic";
+import { ReminderSheet } from "./reminder-sheet";
 import { TodoCard, type TodoDraft } from "./todo-card";
 import { TodoRow } from "./todo-row";
 
@@ -25,13 +27,18 @@ export function RemindScreen({
   done,
   today,
   initialArea,
+  focusId,
 }: {
   lists: TodoList[];
   open: Todo[];
   done: Todo[];
   today: string;
   initialArea: AreaFilter;
+  /** Aus einer Erinnerung geöffnet (/remind?todo=…). */
+  focusId?: string;
 }) {
+  const router = useRouter();
+  const [focus, setFocus] = useState<string | null>(focusId ?? null);
   const [area, setArea] = useState<AreaFilter>(initialArea);
   const [view, setView] = useState<View>("today");
   const [card, setCard] = useState<TodoDraft | null>(null);
@@ -64,6 +71,12 @@ export function RemindScreen({
   );
 
   const visibleOpen = open.filter(inArea);
+  const focusTodo = focus ? open.find((t) => t.id === focus) : undefined;
+
+  function closeFocus() {
+    setFocus(null);
+    router.replace("/remind", { scroll: false });
+  }
 
   return (
     <>
@@ -150,6 +163,19 @@ export function RemindScreen({
       >
         +
       </button>
+
+      {focusTodo && (
+        <ReminderSheet
+          todo={focusTodo}
+          area={areaOf(focusTodo)}
+          today={today}
+          onEdit={() => {
+            closeFocus();
+            setCard(focusTodo);
+          }}
+          onClose={closeFocus}
+        />
+      )}
 
       {card && (
         <TodoCard

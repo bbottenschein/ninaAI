@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/features/auth/session";
 import { postponeToTomorrow, remindAtFor, type Area, type ReminderChoice } from "./logic";
 import { buildRepeat, parseRepeat } from "./repeat";
+import { nextInstance, snoozeUntil, type SnoozeOption } from "./schedule";
 
 export type TodoInput = {
   id?: string;
@@ -93,16 +94,66 @@ export async function saveTodo(input: TodoInput): Promise<Result> {
   return {};
 }
 
-/** Abhaken bzw. wiederherstellen. */
-export async function setTodoDone(id: string, done: boolean): Promise<Result> {
+/**
+ * Abhaken bzw. wiederherstellen. Beim Abhaken einer wiederkehrenden Aufgabe wird
+ * die nächste Instanz angelegt (SPEC-remind-me › Logik) – genau einmal, auch bei
+ * doppeltem Tippen.
+ */
+export async function setTodoDone(id: string, done: boolean): Promise<Result & { nextDue?: string }> {
+  const { user, supabase } = await player();
+  const now = new Date().toISOString();
+
+  if (!done) {
+    const { error } = await supabase.from("todos").update({ completed_at: null, updated_at: now }).eq("id", id);
+    if (error) return { error: "Konnte nicht gespeichert werden." };
+    refresh();
+    return {};
+  }
+
+  const { data: completed, error } = await supabase
+    .from("todos")
+    .update({ completed_at: now, updated_at: now })
+    .eq("id", id)
+    .is("completed_at", null)
+    .select("list_id, title, note, due_date, due_time, remind_at, repeat_rule, priority")
+    .maybeSingle();
+  if (error) return { error: "Konnte nicht gespeichert werden." };
+
+  let nextDue: string | undefined;
+  const next = completed?.repeat_rule ? nextInstance(completed, berlinDate()) : null;
+  if (completed && next) {
+    const { error: insertError } = await supabase.from("todos").insert({
+      list_id: completed.list_id,
+      owner_id: user.id,
+      created_by: user.id,
+      title: completed.title,
+      note: completed.note,
+      due_date: next.due_date,
+      due_time: completed.due_time,
+      remind_at: next.remind_at,
+      repeat_rule: completed.repeat_rule,
+      priority: completed.priority,
+      created_via: "form",
+    });
+    if (insertError) console.error("[remind] nächste Wiederholung", insertError);
+    else nextDue = next.due_date ?? undefined;
+  }
+  refresh();
+  return { nextDue };
+}
+
+/** „Später“ aus der Erinnerung: in 1 Stunde, heute Abend oder morgen früh. */
+export async function snoozeTodo(id: string, option: SnoozeOption): Promise<Result & { until?: string }> {
   const { supabase } = await player();
+  if (!["hour", "evening", "tomorrow"].includes(option)) return { error: "Ungültige Auswahl" };
+  const until = snoozeUntil(option, new Date()).toISOString();
   const { error } = await supabase
     .from("todos")
-    .update({ completed_at: done ? new Date().toISOString() : null, updated_at: new Date().toISOString() })
+    .update({ snoozed_until: until, reminder_sent_at: null, updated_at: new Date().toISOString() })
     .eq("id", id);
-  if (error) return { error: "Konnte nicht gespeichert werden." };
+  if (error) return { error: "Konnte nicht verschoben werden." };
   refresh();
-  return {};
+  return { until };
 }
 
 export async function deleteTodo(id: string): Promise<Result> {
