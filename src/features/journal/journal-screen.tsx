@@ -8,9 +8,11 @@ import { PageHeader } from "@/features/shell/page-header";
 import { EntryForm, EntryView } from "./entry-form";
 import type { EntryTexts, JournalFeedback } from "./feedback";
 import { FeedbackCard, FeedbackLoader } from "./feedback-card";
-import { FeedbackToggle } from "./feedback-toggle";
+import { JournalSettings } from "./journal-settings";
 import type { JournalEntry } from "./logic";
 import { MoodOverview } from "./mood-overview";
+import type { JournalReview } from "./queries";
+import { ReviewCards } from "./review-card";
 
 type Section = "entry" | "overview";
 
@@ -32,6 +34,8 @@ export function JournalScreen({
   editableDates,
   history,
   feedbackEnabled,
+  reviews,
+  pinSet,
 }: {
   today: string;
   /** Tage, für die sie jetzt schreiben kann (heute, vormittags auch gestern). */
@@ -41,6 +45,8 @@ export function JournalScreen({
   /** Einträge für die Mood Overview (rund ein Jahr). */
   history: JournalEntry[];
   feedbackEnabled: boolean;
+  reviews: JournalReview[];
+  pinSet: boolean;
 }) {
   const router = useRouter();
   const [section, setSection] = useState<Section>("entry");
@@ -68,8 +74,8 @@ export function JournalScreen({
         <div className="card mb-4 flex items-start gap-3 bg-lavender-soft text-sm" role="note">
           <span aria-hidden>🔒</span>
           <p className="flex-1">
-            Dein Journal ist privat – Benedikt sieht es nicht. Für das Englisch-Feedback gehen deine Texte an die
-            KI (Claude).
+            Dein Journal ist privat – Benedikt sieht es nicht. Für das Englisch-Feedback und den Monatsrückblick gehen
+            deine Texte an die KI (Claude).
           </p>
           <button type="button" onClick={closeNotice} className="font-extrabold text-lavender">
             Okay
@@ -151,7 +157,7 @@ export function JournalScreen({
               {entry && feedbackEnabled && <StoredFeedback entry={entry} />}
             </>
           )}
-          <FeedbackToggle initial={feedbackEnabled} />
+          <JournalSettings feedbackEnabled={feedbackEnabled} pinSet={pinSet} />
         </>
       )}
 
@@ -166,7 +172,10 @@ export function JournalScreen({
             <StoredFeedback entry={reading} />
           </>
         ) : (
-          <MoodOverview entries={history} today={today} onRead={setReading} />
+          <>
+            <ReviewCards reviews={reviews} />
+            <MoodOverview entries={history} today={today} onRead={setReading} />
+          </>
         ))}
     </>
   );

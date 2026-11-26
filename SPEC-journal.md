@@ -113,6 +113,13 @@ Das Journal ist streng privat. Benedikts Admin-Zugang sieht weder Einträge noch
 - **[Entschieden]** Optional: PIN für den Journal-Tab (standardmäßig aus), damit niemand mitliest, der ihr Handy in der Hand hat.
 - Texte gehen für Feedback und Monthly Review an die Claude API. Ein Hinweis beim ersten Öffnen erklärt das in einem Satz.
 - Export: Sie kann alle Einträge als Datei herunterladen und ihr Journal vollständig löschen.
+- **[Umsetzung]** Einstellungen unten im Daily Entry („⚙️ Journal-Einstellungen“): Feedback-Schalter,
+  PIN festlegen/ändern/entfernen, „Jetzt sperren“, Export als Markdown-Datei (`/api/journal/export`)
+  und „Journal vollständig löschen“ (Bestätigung durch Eintippen von „LÖSCHEN“).
+  PIN: 4 Ziffern, gespeichert als scrypt-Hash in `user_settings.journal_pin_hash`. Nach dem Entsperren
+  gilt ein signiertes httpOnly-Cookie 10 Minuten. 5 Fehlversuche → 5 Minuten Pause.
+  Ist eine PIN gesetzt, zeigt Home nur „written today“ ohne Bewertung. Vergessene PIN: Admin setzt
+  `journal_pin_hash` im SQL-Editor auf `null` (die Einträge sieht er dabei nicht in der App).
 
 ## Datenmodell
 
@@ -124,6 +131,7 @@ Das Journal ist streng privat. Benedikts Admin-Zugang sieht weder Einträge noch
 ### Jobs (Europe/Berlin)
 
 1. **Monatserster 07:00 – Monthly Review:** Einträge des Vormonats an Claude, Ergebnis in journal_reviews speichern. Es wird kein Push verschickt, der Review erscheint beim nächsten Öffnen der Mood Overview.
+   **[Umsetzung]** `/api/jobs/journal-review`, stündlich um :50; ab dem 1. um 07:00 holt er fehlende Rückblicke nach. Ohne Einträge im Vormonat kein Rückblick.
 
 - Diagramme im Frontend aus journal_entries berechnen, keine eigene Statistik-Tabelle nötig.
 - Das Journal nutzt keine Push-Benachrichtigungen und taucht nicht in der Streak-Logik auf.
@@ -132,7 +140,7 @@ Das Journal ist streng privat. Benedikts Admin-Zugang sieht weder Einträge noch
 
 - [x] **Phase J1 – Daily Entry:** Journal-Tab in der Navigation, Tabellen mit RLS, Tagesbewertung mit Blumen-Slider, 4 Fragen mit Satzanfängen, Spracheingabe, ruhige Journal-Karte auf Home ab 18:00.
 - [x] **Phase J2 – Feedback & Mood Overview:** Englisch-Feedback mit Original und Korrektur, Vokabelübernahme, Ansichten Woche / Monat / Jahr, Kennzahlen, Gratitude Wall, Tag antippen zum Lesen.
-- [ ] **Phase J3 – Extras:** Monthly Review, PIN für den Journal-Tab, Export und Löschen.
+- [x] **Phase J3 – Extras:** Monthly Review, PIN für den Journal-Tab, Export und Löschen.
 
 ## Offene Punkte
 
