@@ -1,4 +1,5 @@
 import { getCurrentUser } from "@/features/auth/session";
+import { BlossomRain } from "@/features/extras/blossom-rain";
 import { loadRewards } from "@/features/rewards/queries";
 import { RewardUnlock } from "@/features/rewards/reward-unlock";
 import { TabBar } from "@/features/shell/tab-bar";
@@ -17,6 +18,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
       </main>
       <TabBar tabs={tabsFor(user.role)} />
       <RewardUnlock rewards={unseen} />
+      {user.role === "player" && <BlossomRain />}
     </>
   );
 }

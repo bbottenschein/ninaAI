@@ -11,6 +11,7 @@ import { showHomeCard } from "@/features/journal/logic";
 import { loadEntries } from "@/features/journal/queries";
 import { ensureLesson } from "@/features/lesson/ensure";
 import { PushSettings } from "@/features/notifications/push-settings";
+import { MotionPermission } from "@/features/extras/motion-permission";
 import { isWeekend, type TodoList } from "@/features/remind/logic";
 import { loadHomeTodos } from "@/features/remind/queries";
 import { loadToday } from "@/features/today/queries";
@@ -41,6 +42,7 @@ export default async function HomePage() {
     <>
       <HomeHeader date={date} name={user.name} data={data} />
       {isPlayer && showHomeCard(new Date(), Boolean(journalEntry)) && <JournalHomeCard entry={journalEntry} hideRating={Boolean(access?.pinSet)} />}
+      {isPlayer && <MotionPermission variant="card" />}
       {isPlayer && <HomeTodos todos={todos} lists={lists} today={date} weekend={isWeekend(date)} />}
       {isPlayer && (
         <PushSettings
@@ -49,6 +51,7 @@ export default async function HomePage() {
           description="Deine Erinnerungen aus Remind me und um 19 Uhr die Lern-Erinnerung."
         />
       )}
+      {isPlayer && <MotionPermission variant="row" />}
     </>
   );
 }
