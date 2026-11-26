@@ -12,7 +12,7 @@ export default async function NewsPage() {
   const [data, cookieStore] = await Promise.all([loadNews(date, user), cookies()]);
 
   // Noch keine Lektion: Der Heute-Tab zeigt den Status und stößt die Erzeugung an.
-  if (!data) redirect("/");
+  if (!data) redirect("/learn");
 
   return (
     <NewsReader

@@ -3,26 +3,28 @@ import type { Role } from "@/features/auth/session";
 export type Tab = {
   href: string;
   label: string;
-  icon: "today" | "vocab" | "knowledge" | "rewards" | "admin";
-  /** Weitere Pfade, unter denen der Tab aktiv ist (z. B. Schritte des Tages). */
+  icon: "home" | "learn" | "remind" | "admin";
+  /** Weitere Pfade, unter denen der Tab aktiv ist (z. B. Unter-Tabs und Schritte). */
   sections?: string[];
 };
 
-// Die Schritte des Tages liegen unter eigenen Pfaden, gehören aber zu „Heute“.
-const TODAY: Tab = { href: "/", label: "Heute", icon: "today", sections: ["/news", "/quiz", "/tutor"] };
+const HOME: Tab = { href: "/", label: "Home", icon: "home" };
 
-// Jedes Feature-Modul bringt seinen eigenen Tab mit. Neue Module hier eintragen.
-const PLAYER_TABS: Tab[] = [
-  TODAY,
-  { href: "/vokabeln", label: "Vokabeln", icon: "vocab" },
-  { href: "/knowledge", label: "Knowledge", icon: "knowledge" },
-  { href: "/success", label: "Success", icon: "rewards" },
-];
+// Modul „Daily Learning“: Lektion (mit News, Quiz, Tutor), Vokabeln, Knowledge, Success.
+const LEARN: Tab = {
+  href: "/learn",
+  label: "Daily Learning",
+  icon: "learn",
+  sections: ["/news", "/quiz", "/tutor", "/vokabeln", "/knowledge", "/success"],
+};
 
-const ADMIN_TABS: Tab[] = [
-  TODAY,
-  { href: "/admin", label: "Admin", icon: "admin" },
-];
+// Modul „Remind me“ (siehe SPEC-remind-me.md). Neue Module hier eintragen.
+const REMIND: Tab = { href: "/remind", label: "Remind me", icon: "remind" };
+
+const PLAYER_TABS: Tab[] = [HOME, LEARN, REMIND];
+
+// Der Admin sieht „Remind me“ nicht (privat), aber Ninas Lektion über Home.
+const ADMIN_TABS: Tab[] = [HOME, { href: "/admin", label: "Admin", icon: "admin" }];
 
 export function tabsFor(role: Role): Tab[] {
   return role === "admin" ? ADMIN_TABS : PLAYER_TABS;

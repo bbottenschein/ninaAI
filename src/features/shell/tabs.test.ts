@@ -2,35 +2,32 @@ import { describe, expect, it } from "vitest";
 import { isActive, tabsFor } from "./tabs";
 
 describe("tabsFor", () => {
-  it("zeigt der Spielerin die vier Lern-Tabs", () => {
-    expect(tabsFor("player").map((t) => t.label)).toEqual([
-      "Heute",
-      "Vokabeln",
-      "Knowledge",
-      "Success",
-    ]);
+  it("zeigt der Spielerin Home, Daily Learning und Remind me", () => {
+    expect(tabsFor("player").map((t) => t.label)).toEqual(["Home", "Daily Learning", "Remind me"]);
   });
 
-  it("zeigt dem Admin Heute und Admin", () => {
+  it("zeigt dem Admin Home und Admin – aber kein Remind me", () => {
     expect(tabsFor("admin").map((t) => t.href)).toEqual(["/", "/admin"]);
   });
 });
 
 describe("isActive", () => {
-  const [today, vocab] = tabsFor("player");
+  const [home, learn, remind] = tabsFor("player");
 
-  it("markiert Heute nur auf der Startseite", () => {
-    expect(isActive(today, "/")).toBe(true);
-    expect(isActive(today, "/vokabeln")).toBe(false);
+  it("markiert Home nur auf der Startseite", () => {
+    expect(isActive(home, "/")).toBe(true);
+    expect(isActive(home, "/learn")).toBe(false);
   });
 
-  it("markiert Heute auch auf den Schritten des Tages", () => {
-    expect(isActive(today, "/news")).toBe(true);
-    expect(isActive(vocab, "/news")).toBe(false);
+  it("markiert Daily Learning auf allen Unter-Tabs und Schritten der Lektion", () => {
+    for (const path of ["/learn", "/news", "/quiz", "/tutor", "/vokabeln", "/knowledge", "/success"]) {
+      expect(isActive(learn, path)).toBe(true);
+    }
+    expect(isActive(learn, "/remind")).toBe(false);
   });
 
-  it("markiert Unterseiten als aktiv", () => {
-    expect(isActive(vocab, "/vokabeln/quiz")).toBe(true);
-    expect(isActive(vocab, "/vokabelnx")).toBe(false);
+  it("markiert Unterseiten als aktiv, aber keine ähnlich beginnenden Pfade", () => {
+    expect(isActive(remind, "/remind/liste")).toBe(true);
+    expect(isActive(remind, "/reminder")).toBe(false);
   });
 });

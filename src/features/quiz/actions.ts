@@ -53,6 +53,6 @@ export async function answerQuizQuestion(
     return { error: "Konnte nicht gespeichert werden. Bitte nochmal versuchen." };
   }
 
-  revalidatePath("/");
+  revalidatePath("/", "layout");
   return result;
 }

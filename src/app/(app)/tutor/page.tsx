@@ -15,7 +15,7 @@ export default async function TutorPage() {
   const date = berlinDate();
   const data = await loadTutor(date, user);
 
-  if (!data) redirect("/");
+  if (!data) redirect("/learn");
   // Schritte nacheinander: erst das Quiz.
   if (user.role === "player" && !data.quizDone) redirect("/quiz");
 

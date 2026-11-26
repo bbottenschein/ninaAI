@@ -91,7 +91,7 @@ export async function tutorTurn(date: string, rawHistory: unknown): Promise<Tuto
       .eq("date", date);
     if (error) throw error;
 
-    revalidatePath("/");
+    revalidatePath("/", "layout");
     return { kind: "done", message: closing, feedback: result.feedback };
   } catch (error) {
     console.error("[tutor] Gesprächsschritt fehlgeschlagen", error);
