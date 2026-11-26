@@ -31,8 +31,8 @@ Jede Person sieht nur ihre eigenen Einstellungen.
 | Modus | Farben | Maskottchen | Motiv (Wiese, Bewertung, Schütteln) |
 |---|---|---|---|
 | 🌸 Flower (Standard) | Rosa, Lavendel, Mint | Maus | Blumen, Blumenwiese, Blütenregen |
-| ◻️ Clean Light | Warmweiß, Beige, Greige, Akzent Anthrazit | Origami-Kranich (Vorschlag) | Eukalyptus-Blätter; Zweig, der Blätter bekommt; Blätterregen |
-| 🌙 Dark | Fast schwarz, rosa Akzent | kleine Eule (Vorschlag) | Sterne als Sternbild-Pfad; Mondphasen 1–10; Sternschnuppen |
+| ◻️ Clean Light | Warmweiß, Beige, Greige, Akzent Anthrazit | Origami-Kranich | Eukalyptus-Blätter; Zweig, der Blätter bekommt; Blätterregen |
+| 🌙 Dark | Fast schwarz, rosa Akzent | kleine Eule | Sterne als Sternbild-Pfad; Mondphasen 1–10; Sternschnuppen |
 | 🐾 Cozy Cat | Creme, Karamell, Zimtbraun, Espresso | getigerte Katze | Pfotenpfad mit Wollknäueln; Katze wacht auf 1–10; Pfotenregen |
 | 🌓 Automatisch | Flower bzw. Dark je nach Hell/Dunkel-Einstellung des Handys | – | – |
 
@@ -47,9 +47,11 @@ Jede Person sieht nur ihre eigenen Einstellungen.
 
 - [x] **Phase S1 – Einstellungen:** ⚙️ auf Home, Seite mit Geräte-Schalter, Schaltern pro Push-Art,
   Bewegungssensoren und Abmelden.
-- [ ] **Phase S2 – Design-System:** Flower, Clean Light, Dark, Automatisch, Umschalter.
+- [x] **Phase S2 – Design-System:** Flower, Clean Light, Dark, Automatisch, Umschalter.
+  **[Umsetzung]** Die Farben von Cozy Cat sind schon in S2 dabei; Maskottchen und Motive folgen in S3.
+  Vorher wechselte die App automatisch mit dem Handy in dunkle Farben – das macht jetzt nur noch „Automatisch“.
 - [ ] **Phase S3 – Motive:** Cozy Cat sowie die Motive für Clean Light und Dark.
 
 ## Offene Punkte
 
-- [ ] Motive für Clean Light (Origami-Kranich & Eukalyptus) und Dark (Eule, Mond & Sterne) bestätigen.
+- [x] Motive bestätigt: Clean Light = Origami-Kranich & Eukalyptus, Dark = Eule, Mond & Sterne.

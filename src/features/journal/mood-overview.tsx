@@ -19,8 +19,8 @@ const WEEKDAYS = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
 const MONTHS = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
 const MONTHS_LONG = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
 
-// Fünf Rosatöne von zart bis kräftig (Kalender und Jahreskacheln).
-const TONES = ["bg-[#ffe9f1]", "bg-[#ffd1e1]", "bg-[#ffb0cb]", "bg-[#f78cb2]", "bg-[#e45b91] text-white"];
+// Fünf Töne von zart bis kräftig (Kalender und Jahreskacheln), je nach Design.
+const TONES = ["bg-tone-1", "bg-tone-2", "bg-tone-3", "bg-tone-4", "bg-tone-5 text-tone-5-ink"];
 
 function shortDate(date: string): string {
   const [, m, d] = date.split("-");
