@@ -158,6 +158,10 @@ Das verbindliche Schema steht in `supabase/migrations/`.
 
 - Wiederholung: Beim Abhaken einer Aufgabe mit repeat_rule wird die nächste Instanz mit neuem Fälligkeitsdatum und neuer Erinnerung angelegt.
 - „Später“ setzt snoozed_until und leert reminder_sent_at, damit der Job erneut erinnert.
+- **[Umsetzung]** Monatlich am 31. → letzter Tag des kürzeren Monats; jährlich am 29.02. → 28.02.
+  Lag eine wiederkehrende Aufgabe lange zurück, beginnt die nächste Instanz frühestens heute.
+- **[Umsetzung]** Erinnerungen, die beim Job-Lauf älter als 6 Stunden sind (z. B. nachträglich
+  für gestern angelegt), werden ohne Push als erledigt markiert.
 - KI-Schnelleingabe: eigener Server-Endpunkt, der Text an Claude schickt und striktes JSON mit den Feldern oben zurückbekommt. Ungültiges JSON führt zum Formular-Fallback.
 
 ## Umsetzung in Phasen
@@ -165,7 +169,7 @@ Das verbindliche Schema steht in `supabase/migrations/`.
 Vier Phasen. Nach Phase 2 ist „Remind me“ im Alltag voll nutzbar.
 
 - [x] **Phase R1 – Grundgerüst:** neue Navigation (Home, Daily Learning mit Success-Unter-Tab, Remind me), Tabellen mit RLS, Bereiche Work Mode und Life Mode, Korrektur-Karte zum manuellen Anlegen und Bearbeiten, To-Do Overview mit Umschalter und Ansichten Heute / Geplant / Listen / Erledigt.
-- [ ] **Phase R2 – Home & Erinnerungen:** Home mit Tagesstatus (Datum, Lektion, Streak, heute fällige To-dos), Erinnerungs-Job, Push mit „Erledigt“ und „Später“, Wiederholungen, Wochenend-Regel für den Work Mode.
+- [x] **Phase R2 – Home & Erinnerungen:** Home mit Tagesstatus (Datum, Lektion, Streak, heute fällige To-dos), Erinnerungs-Job, Push mit „Erledigt“ und „Später“, Wiederholungen, Wochenend-Regel für den Work Mode.
 - [ ] **Phase R3 – KI-Eingabe:** KI-Eingabefeld, das die Karte vorbefüllt, mit Bereichserkennung, Spracheingabe, Standardzeiten, mehreren Aufgaben pro Satz und Änderungen per KI (inkl. Button „Mit KI ändern“).
 - [ ] **Phase R4 – Extras:** Tagesüberblick um 07:30, gemeinsame Liste mit Benedikt.
 
