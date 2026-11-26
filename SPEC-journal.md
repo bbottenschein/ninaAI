@@ -68,6 +68,9 @@ Nach dem Speichern gibt die KI kurzes, freundliches Feedback zum Englisch. Der I
 - **Vokabeln:** Bis zu 3 bessere oder neue Ausdrücke werden vorgeschlagen und mit einem Tipp in die Vokabelsammlung übernommen.
 - **Ton:** warm und ermutigend. Die KI kommentiert keine Gefühle, gibt keine Ratschläge zum Leben und stellt keine Diagnosen.
 - **Abschaltbar:** In den Einstellungen kann sie das Feedback ausschalten, wenn sie einfach nur schreiben möchte.
+- **[Umsetzung]** Schalter unten im Daily Entry (`user_settings.journal_feedback`, Standard an).
+  Korrekturen werden gegen ihren Originaltext geprüft: nur Stellen, die wörtlich vorkommen, höchstens 3.
+  Das Feedback gehört zu einer Fassung des Eintrags; nach einer Änderung wird es neu erzeugt.
 
 ## Mood Overview
 
@@ -76,7 +79,8 @@ Die zweite Section zeigt ihre Stimmung als Verlauf über die Tage aus den Abendb
 **[Entschieden]** Keine Mood Check-ins tagsüber. Damit entfällt die Ansicht „Heute“ mit Tagesverlauf
 und die Tabelle `mood_checkins`.
 
-**Zeitraum-Umschalter:** Woche / Monat / Jahr
+**Zeitraum-Umschalter:** Woche / Monat / Jahr, dazu **🌸 Dankbar** für die Gratitude Wall.
+Woche, Monat und Jahr lassen sich mit ‹ › blättern; im Jahr führt ein Tipp auf einen Monat zum Kalender.
 
 | Ansicht | Darstellung | Datenquelle |
 |---|---|---|
@@ -127,7 +131,7 @@ Das Journal ist streng privat. Benedikts Admin-Zugang sieht weder Einträge noch
 ## Umsetzung in Phasen
 
 - [x] **Phase J1 – Daily Entry:** Journal-Tab in der Navigation, Tabellen mit RLS, Tagesbewertung mit Blumen-Slider, 4 Fragen mit Satzanfängen, Spracheingabe, ruhige Journal-Karte auf Home ab 18:00.
-- [ ] **Phase J2 – Feedback & Mood Overview:** Englisch-Feedback mit Original und Korrektur, Vokabelübernahme, Ansichten Woche / Monat / Jahr, Kennzahlen, Gratitude Wall, Tag antippen zum Lesen.
+- [x] **Phase J2 – Feedback & Mood Overview:** Englisch-Feedback mit Original und Korrektur, Vokabelübernahme, Ansichten Woche / Monat / Jahr, Kennzahlen, Gratitude Wall, Tag antippen zum Lesen.
 - [ ] **Phase J3 – Extras:** Monthly Review, PIN für den Journal-Tab, Export und Löschen.
 
 ## Offene Punkte

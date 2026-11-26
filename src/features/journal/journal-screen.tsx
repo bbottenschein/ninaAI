@@ -6,8 +6,11 @@ import { formatLongDate } from "@/lib/date";
 import { Mouse } from "@/features/shell/mouse";
 import { PageHeader } from "@/features/shell/page-header";
 import { EntryForm, EntryView } from "./entry-form";
-import { MOOD_EMOJI, type JournalEntry } from "./logic";
-import { RatingFlower } from "./rating-flower";
+import type { EntryTexts, JournalFeedback } from "./feedback";
+import { FeedbackCard, FeedbackLoader } from "./feedback-card";
+import { FeedbackToggle } from "./feedback-toggle";
+import type { JournalEntry } from "./logic";
+import { MoodOverview } from "./mood-overview";
 
 type Section = "entry" | "overview";
 
@@ -27,19 +30,22 @@ export function JournalScreen({
   dates,
   entries,
   editableDates,
-  recent,
+  history,
+  feedbackEnabled,
 }: {
   today: string;
   /** Tage, für die sie jetzt schreiben kann (heute, vormittags auch gestern). */
   dates: string[];
   entries: JournalEntry[];
   editableDates: string[];
-  recent: JournalEntry[];
+  /** Einträge für die Mood Overview (rund ein Jahr). */
+  history: JournalEntry[];
+  feedbackEnabled: boolean;
 }) {
   const router = useRouter();
   const [section, setSection] = useState<Section>("entry");
   const [date, setDate] = useState(dates[0]);
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState<EntryTexts | null>(null);
   const [reading, setReading] = useState<JournalEntry | null>(null);
   const seen = useSyncExternalStore(subscribe, noticeSeen, () => true);
   const [noticeClosed, setNoticeClosed] = useState(false);
@@ -107,7 +113,7 @@ export function JournalScreen({
                   aria-pressed={date === d}
                   onClick={() => {
                     setDate(d);
-                    setSaved(false);
+                    setSaved(null);
                   }}
                   className={`chip px-3.5 py-1.5 text-sm ${date === d ? "bg-foreground text-background" : "bg-surface text-muted"}`}
                 >
@@ -118,27 +124,34 @@ export function JournalScreen({
           )}
 
           {saved ? (
-            <div className="card animate-pop bg-accent-soft text-center">
-              <Mouse mood="party" className="mx-auto size-20" />
-              <p className="mt-2 text-lg font-extrabold">Danke fürs Schreiben 🌸</p>
-              <p className="text-sm text-muted">Dein Eintrag ist gespeichert.</p>
-              <button type="button" onClick={() => setSaved(false)} className="btn-secondary mt-4">
-                Eintrag ansehen
-              </button>
-            </div>
+            <>
+              <div className="card animate-pop bg-accent-soft text-center">
+                <Mouse mood="party" className="mx-auto size-20" />
+                <p className="mt-2 text-lg font-extrabold">Danke fürs Schreiben 🌸</p>
+                <p className="text-sm text-muted">Dein Eintrag ist gespeichert.</p>
+                <button type="button" onClick={() => setSaved(null)} className="btn-secondary mt-4">
+                  Eintrag ansehen
+                </button>
+              </div>
+              {feedbackEnabled && <FeedbackLoader date={date} texts={saved} />}
+            </>
           ) : (
-            <EntryForm
-              key={`${date}-${entry?.updated_at ?? "new"}`}
-              date={date}
-              entry={entry}
-              editable={editable}
-              onSaved={() => {
-                setSaved(true);
-                router.refresh();
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-            />
+            <>
+              <EntryForm
+                key={`${date}-${entry?.updated_at ?? "new"}`}
+                date={date}
+                entry={entry}
+                editable={editable}
+                onSaved={(texts) => {
+                  setSaved(texts);
+                  router.refresh();
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+              />
+              {entry && feedbackEnabled && <StoredFeedback entry={entry} />}
+            </>
           )}
+          <FeedbackToggle initial={feedbackEnabled} />
         </>
       )}
 
@@ -150,42 +163,24 @@ export function JournalScreen({
             </button>
             <p className="mb-3 font-extrabold">{formatLongDate(reading.date)}</p>
             <EntryView entry={reading} />
+            <StoredFeedback entry={reading} />
           </>
         ) : (
-          <>
-            <div className="card mb-4 bg-lavender-soft text-sm">
-              Woche, Monat, Jahr und die Gratitude Wall kommen mit dem nächsten Update (Phase J2).
-            </div>
-            {recent.length === 0 ? (
-              <div className="card flex flex-col items-center gap-2 py-8 text-center text-muted">
-                <Mouse mood="sleepy" className="size-16" />
-                <p>Hier wächst bald deine Stimmungs-Wiese.</p>
-              </div>
-            ) : (
-              <ul className="flex flex-col gap-2">
-                {recent.map((e) => (
-                  <li key={e.id}>
-                    <button
-                      type="button"
-                      onClick={() => setReading(e)}
-                      className="card flex w-full items-center gap-3 py-3 text-left transition active:scale-[0.99]"
-                    >
-                      <RatingFlower rating={e.rating} className="size-12 shrink-0" />
-                      <div className="min-w-0 flex-1">
-                        <p className="font-bold">{formatLongDate(e.date)}</p>
-                        <p lang="en" className="truncate text-sm text-muted">
-                          {e.mood_word ? `${MOOD_EMOJI[e.mood_word]} ${e.mood_word} · ` : ""}
-                          {e.day_text}
-                        </p>
-                      </div>
-                      <span className="font-extrabold text-accent-ink">{e.rating}</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </>
+          <MoodOverview entries={history} today={today} onRead={setReading} />
         ))}
     </>
+  );
+}
+
+/** Gespeichertes Feedback zur aktuellen Fassung eines Eintrags anzeigen. */
+function StoredFeedback({ entry }: { entry: JournalEntry }) {
+  const feedback = entry.feedback as JournalFeedback | null;
+  if (!feedback || feedback.for_updated_at !== entry.updated_at) return null;
+  return (
+    <FeedbackCard
+      feedback={feedback}
+      date={entry.date}
+      texts={{ day_text: entry.day_text, gratitude: entry.gratitude, highlight: entry.highlight, tomorrow_focus: entry.tomorrow_focus }}
+    />
   );
 }

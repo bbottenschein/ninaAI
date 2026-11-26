@@ -13,9 +13,21 @@ export async function loadEntries(dates: string[]): Promise<JournalEntry[]> {
   return (data ?? []) as JournalEntry[];
 }
 
-/** Letzte Einträge (für die einfache Übersicht in Phase J1). */
-export async function loadRecentEntries(limit = 14): Promise<JournalEntry[]> {
+/** Einträge ab einem Datum (für die Mood Overview), neueste zuerst. */
+export async function loadEntriesSince(from: string): Promise<JournalEntry[]> {
   const supabase = await createClient();
-  const { data } = await supabase.from("journal_entries").select(COLUMNS).order("date", { ascending: false }).limit(limit);
+  const { data } = await supabase
+    .from("journal_entries")
+    .select(COLUMNS)
+    .gte("date", from)
+    .order("date", { ascending: false })
+    .limit(800);
   return (data ?? []) as JournalEntry[];
+}
+
+/** Ob das Englisch-Feedback eingeschaltet ist (Standard: an). */
+export async function loadFeedbackEnabled(userId: string): Promise<boolean> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("user_settings").select("journal_feedback").eq("user_id", userId).maybeSingle();
+  return data?.journal_feedback ?? true;
 }

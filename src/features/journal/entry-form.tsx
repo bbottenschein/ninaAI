@@ -13,6 +13,7 @@ import {
   type JournalEntry,
   type MoodWord,
 } from "./logic";
+import type { EntryTexts } from "./feedback";
 import { RatingFlower } from "./rating-flower";
 
 type Field = "day_text" | "gratitude0" | "gratitude1" | "gratitude2" | "highlight" | "tomorrow_focus";
@@ -27,7 +28,7 @@ export function EntryForm({
   date: string;
   entry: JournalEntry | null;
   editable: boolean;
-  onSaved: () => void;
+  onSaved: (texts: EntryTexts) => void;
 }) {
   const [rating, setRating] = useState(entry?.rating ?? 6);
   const [touched, setTouched] = useState(Boolean(entry));
@@ -79,7 +80,13 @@ export function EntryForm({
         tomorrow_focus: values.tomorrow_focus,
       });
       if (result.error) setError(result.error);
-      else onSaved();
+      else
+        onSaved({
+          day_text: values.day_text.trim(),
+          gratitude: [values.gratitude0, values.gratitude1, values.gratitude2].map((g) => g.trim()).filter(Boolean),
+          highlight: values.highlight.trim(),
+          tomorrow_focus: values.tomorrow_focus.trim(),
+        });
     });
   }
 
