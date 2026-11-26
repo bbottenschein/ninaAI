@@ -5,12 +5,16 @@ import { useEffect, useState, useTransition, type ReactNode } from "react";
 import type { LessonNews } from "@/features/lesson/schema";
 import { markNewsRead } from "./actions";
 import { Mouse } from "@/features/shell/mouse";
-import { annotate, type Mark, type MarkKind } from "./annotate";
+import { annotate, sentenceAt, tokenize, type Mark, type MarkKind } from "./annotate";
+import { NuggetForm } from "@/features/knowledge/nugget-form";
+import { addVocabFromNews } from "@/features/vocab/actions";
 import { type NewsLang } from "./lang";
 import { LangToggle, saveNewsLang } from "./lang-toggle";
 
 type Lang = NewsLang;
-type Selection = { news: number; kind: MarkKind; index: number };
+type Selection =
+  | { news: number; kind: MarkKind; index: number }
+  | { news: number; kind: "word"; word: string; sentence: string };
 
 
 const REGION: Record<LessonNews["region"], { label: string; chip: string }> = {
@@ -95,6 +99,7 @@ export function NewsReader({
               readOnly={readOnly}
               pending={pending}
               onSelect={(kind, index) => setSelection({ news: i, kind, index })}
+              onWord={(word, sentence) => setSelection({ news: i, kind: "word", word, sentence })}
               onMarkRead={() => markRead(i)}
             />
           </li>
@@ -125,6 +130,7 @@ export function NewsReader({
           item={news[selection.news]}
           selection={selection}
           lang={lang}
+          readOnly={readOnly}
           onClose={() => setSelection(null)}
         />
       )}
@@ -156,6 +162,7 @@ function NewsCard({
   readOnly,
   pending,
   onSelect,
+  onWord,
   onMarkRead,
 }: {
   item: LessonNews;
@@ -164,11 +171,15 @@ function NewsCard({
   readOnly: boolean;
   pending: boolean;
   onSelect: (kind: MarkKind, index: number) => void;
+  onWord: (word: string, sentence: string) => void;
   onMarkRead: () => void;
 }) {
   const title = lang === "en" ? item.title_en : item.title_de;
   const text = lang === "en" ? item.text_en : item.text_de;
   const segments = annotate(text, marksFor(item, lang));
+  // Im englischen Text lässt sich jedes Wort antippen und zur Sammlung hinzufügen.
+  const wordsTappable = lang === "en" && !readOnly;
+  const offsets = segments.reduce<number[]>((acc, seg, i) => [...acc, i === 0 ? 0 : acc[i - 1] + segments[i - 1].text.length], []);
 
   return (
     <article className={`card ${isRead ? "border-mint/40" : ""}`}>
@@ -190,6 +201,22 @@ function NewsCard({
             >
               {segment.text}
             </button>
+          ) : wordsTappable ? (
+            <span key={i}>
+              {tokenize(segment.text, offsets[i]).map((token) =>
+                token.isWord ? (
+                  <span
+                    key={token.start}
+                    onClick={() => onWord(token.text, sentenceAt(text, token.start))}
+                    className="cursor-pointer rounded-sm active:bg-accent-soft"
+                  >
+                    {token.text}
+                  </span>
+                ) : (
+                  token.text
+                ),
+              )}
+            </span>
           ) : (
             <span key={i}>{segment.text}</span>
           ),
@@ -221,11 +248,64 @@ function NewsCard({
   );
 }
 
-const LABEL_CHIP: Record<MarkKind, string> = {
+const LABEL_CHIP: Record<MarkKind | "word", string> = {
   term: "bg-accent-soft text-accent-ink",
   person: "bg-sun-soft text-sun",
   vocab: "bg-lavender-soft text-lavender",
+  word: "bg-lavender-soft text-lavender",
 };
+
+function KnowledgeQuickAdd({ name, nugget }: { name: string; nugget: string }) {
+  const [state, setState] = useState<"idle" | "form" | "saved">("idle");
+  if (state === "saved") return <p className="chip mt-4 bg-mint-soft text-mint">✓ In Knowledge gespeichert</p>;
+  if (state === "idle") {
+    return (
+      <button type="button" onClick={() => setState("form")} className="btn-primary mt-4 w-full">
+        💡 Zu Knowledge hinzufügen
+      </button>
+    );
+  }
+  return (
+    <div className="mt-4 rounded-2xl bg-background p-3">
+      <NuggetForm
+        initial={{ name, nugget }}
+        fromNews
+        submitLabel="Speichern"
+        onDone={() => setState("saved")}
+        onCancel={() => setState("idle")}
+      />
+    </div>
+  );
+}
+
+function WordQuickAdd({ word, sentence }: { word: string; sentence: string }) {
+  const [result, setResult] = useState<{ word?: string; translation?: string; error?: string } | null>(null);
+  const [pending, startTransition] = useTransition();
+  return (
+    <>
+      <p lang="en" className="text-sm text-muted italic">
+        „{sentence}“
+      </p>
+      {result?.translation ? (
+        <p className="mt-4 rounded-2xl bg-mint-soft px-4 py-3 font-semibold">
+          ✓ <span lang="en">{result.word}</span> = {result.translation} – in deiner Sammlung
+        </p>
+      ) : (
+        <>
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() => startTransition(async () => setResult(await addVocabFromNews({ word, sentence })))}
+            className="btn-primary mt-4 w-full"
+          >
+            {pending ? "Die Maus schlägt nach …" : "📚 Zur Sammlung hinzufügen"}
+          </button>
+          {result?.error && <p className="mt-2 text-sm text-danger">{result.error}</p>}
+        </>
+      )}
+    </>
+  );
+}
 
 function Legend({ lang }: { lang: Lang }) {
   return (
@@ -241,11 +321,13 @@ function DetailSheet({
   item,
   selection,
   lang,
+  readOnly,
   onClose,
 }: {
   item: LessonNews;
   selection: Selection;
   lang: Lang;
+  readOnly: boolean;
   onClose: () => void;
 }) {
   useEffect(() => {
@@ -268,7 +350,18 @@ function DetailSheet({
     const role = lang === "en" ? person.role_en : person.role_de;
     label = "Person";
     heading = person.name;
-    body = role ? <p lang={lang}>{role}</p> : <p className="text-muted">Amt im Artikel nicht genannt.</p>;
+    body = (
+      <>
+        {role ? <p lang={lang}>{role}</p> : <p className="text-muted">Amt im Artikel nicht genannt.</p>}
+        {!readOnly && (
+          <KnowledgeQuickAdd name={person.name} nugget={person.role_de ?? person.role_en ?? ""} />
+        )}
+      </>
+    );
+  } else if (selection.kind === "word") {
+    label = "Wort";
+    heading = selection.word;
+    body = <WordQuickAdd word={selection.word} sentence={selection.sentence} />;
   } else {
     const vocab = item.vocab[selection.index];
     label = "Vokabel";
@@ -282,6 +375,7 @@ function DetailSheet({
         <p lang="en" className="mt-2 text-sm text-muted italic">
           „{vocab.example}“
         </p>
+        <p className="chip mt-3 bg-mint-soft text-mint">✓ Automatisch in deiner Vokabelsammlung</p>
       </>
     );
   }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { annotate } from "./annotate";
+import { annotate, sentenceAt, tokenize } from "./annotate";
 
 describe("annotate", () => {
   it("markiert Begriffe beim ersten Vorkommen", () => {
@@ -52,5 +52,35 @@ describe("annotate", () => {
       { kind: "term", needle: "Koalitionsausschuss", index: 0 },
     ]);
     expect(segments[1]).toEqual({ text: "Koalitionsausschuss", mark: { kind: "term", index: 0 } });
+  });
+});
+
+
+describe("tokenize", () => {
+  it("trennt Wörter von Satzzeichen und behält die Position", () => {
+    const tokens = tokenize("The vote, finally.", 10);
+    expect(tokens.filter((t) => t.isWord).map((t) => [t.text, t.start])).toEqual([
+      ["The", 10],
+      ["vote", 14],
+      ["finally", 20],
+    ]);
+    expect(tokens.map((t) => t.text).join("")).toBe("The vote, finally.");
+  });
+
+  it("hält Wörter mit Apostroph und Bindestrich zusammen", () => {
+    expect(tokenize("Germany's long-term plan").filter((t) => t.isWord).map((t) => t.text)).toEqual([
+      "Germany's",
+      "long-term",
+      "plan",
+    ]);
+  });
+});
+
+describe("sentenceAt", () => {
+  const text = "The Bundestag met. Lars Klingbeil defended the plan! A vote is planned.";
+  it("findet den Satz zu einer Textstelle", () => {
+    expect(sentenceAt(text, text.indexOf("defended"))).toBe("Lars Klingbeil defended the plan!");
+    expect(sentenceAt(text, 0)).toBe("The Bundestag met.");
+    expect(sentenceAt(text, text.indexOf("planned"))).toBe("A vote is planned.");
   });
 });

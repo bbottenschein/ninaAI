@@ -47,3 +47,32 @@ export function annotate(text: string, marks: Mark[]): Segment[] {
   if (cursor < text.length) segments.push({ text: text.slice(cursor) });
   return segments;
 }
+
+export type Token = { text: string; start: number; isWord: boolean };
+
+/** Zerlegt Text in Wörter und Zwischenräume (Satzzeichen, Leerzeichen). */
+export function tokenize(text: string, offset = 0): Token[] {
+  const tokens: Token[] = [];
+  const re = /\p{L}[\p{L}\p{M}'’-]*/gu;
+  let last = 0;
+  for (const m of text.matchAll(re)) {
+    const index = m.index ?? 0;
+    if (index > last) tokens.push({ text: text.slice(last, index), start: offset + last, isWord: false });
+    // Bindestrich/Apostroph am Wortende gehören nicht zum Wort.
+    const word = m[0].replace(/['’-]+$/u, "");
+    tokens.push({ text: word, start: offset + index, isWord: true });
+    last = index + word.length;
+  }
+  if (last < text.length) tokens.push({ text: text.slice(last), start: offset + last, isWord: false });
+  return tokens;
+}
+
+/** Der Satz, in dem die Textstelle `offset` liegt. */
+export function sentenceAt(text: string, offset: number): string {
+  const re = /[^.!?]+(?:[.!?]+["”’)]*|$)/g;
+  for (const m of text.matchAll(re)) {
+    const start = m.index ?? 0;
+    if (offset >= start && offset < start + m[0].length) return m[0].trim();
+  }
+  return text.trim();
+}
